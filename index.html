@@ -1,308 +1,60 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines 1 Win</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
+<title>Mines 3D</title>
+<link rel="stylesheet" href="style.css">
 
-        body {
-            background-color: #2e3d52;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Фоновые 3D крестики */
-        .bg-crosses {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.15;
-        }
-
-        .bg-cross {
-            position: absolute;
-            color: #047cd7;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .container {
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            z-index: 1;
-        }
-
-        header h1 {
-            font-size: 28px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-bottom: 6px;
-            color: #ffffff;
-            /* Голубое свечение */
-            text-shadow: 0 0 15px rgba(4, 124, 215, 0.8), 0 0 25px rgba(96, 165, 250, 0.4);
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-bottom: 35px;
-        }
-
-        .game-board {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin: 0 auto 30px;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .cell {
-            aspect-ratio: 1;
-            background-color: #047cd7;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .cell:hover {
-            transform: scale(1.05) translateY(-2px);
-            background-color: #0588e8;
-            box-shadow: 0 6px 20px rgba(4, 124, 215, 0.4);
-        }
-
-        .cell.revealed {
-            background-color: #16202e;
-            cursor: default;
-            transform: none;
-            box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(4, 124, 215, 0.2);
-        }
-
-        .star-3d {
-            width: 70%;
-            height: 70%;
-            /* 3D эффект иконки звезды */
-            filter: drop-shadow(0 0 12px #ffbb00) drop-shadow(0 4px 6px rgba(0,0,0,0.4));
-            animation: starPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes starPop {
-            0% { transform: scale(0) rotate(-15deg); opacity: 0; }
-            80% { transform: scale(1.1); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        /* Модальное окно (оверлей) */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(13, 20, 32, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease-in-out;
-            backdrop-filter: blur(6px);
-        }
-
-        .overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal {
-            background: linear-gradient(145deg, #1b2738, #0b111a);
-            padding: 40px 32px;
-            border-radius: 24px;
-            text-align: center;
-            max-width: 380px;
-            width: 90%;
-            border: 2px solid rgba(4, 124, 215, 0.4);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7), inset 0 2px 8px rgba(255, 255, 255, 0.1);
-            transform: translateY(30px) scale(0.95);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .overlay.active .modal {
-            transform: translateY(0) scale(1);
-        }
-
-        .modal-title {
-            color: #60a5fa;
-            font-size: 38px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-            text-shadow: 0 0 16px rgba(96, 165, 250, 0.6);
-        }
-
-        .modal-subtitle {
-            color: #94a3b8;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 28px;
-        }
-
-        .amount-box {
-            background: linear-gradient(135deg, rgba(4, 124, 215, 0.18), rgba(4, 124, 215, 0.06));
-            border: 1px solid rgba(4, 124, 215, 0.4);
-            border-radius: 16px;
-            padding: 18px 24px;
-            margin-bottom: 36px;
-            box-shadow: 0 0 20px rgba(4, 124, 215, 0.15);
-        }
-
-        .amount-text {
-            font-size: 32px;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: 1px;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
-        }
-
-        .collect-btn {
-            background: linear-gradient(135deg, #047cd7, #025096);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            padding: 18px 32px;
-            font-size: 15px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 6px 24px rgba(4, 124, 215, 0.5);
-            transition: all 0.2s ease-in-out;
-            width: 100%;
-        }
-
-        .collect-btn:hover {
-            filter: brightness(1.15);
-            box-shadow: 0 8px 30px rgba(4, 124, 215, 0.6);
-            transform: translateY(-1px);
-        }
-
-        .collect-btn:active {
-            transform: translateY(2px);
-        }
-    </style>
+<!-- 3D библиотека -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
+
 <body>
 
-    <div class="bg-crosses" id="crossesContainer"></div>
-
-    <div class="container">
-        <header>
-            <h1>ИСПЫТАЙ СВОЮ УДАЧУ В MINES 1 WIN</h1>
-        </header>
-        <div class="subtitle">Нажми любую клетку, чтобы испытать удачу.</div>
-
-        <div class="game-board" id="board"></div>
+<div class="top-bar">
+    <div class="left">
+        <button id="sound">🔊</button>
     </div>
 
-    <div class="overlay" id="winModal">
-        <div class="modal">
-            <div class="modal-title">YOU'VE WON!</div>
-            <div class="modal-subtitle">Ваш выигрыш</div>
-            <div class="amount-box">
-                <div class="amount-text">500 000 P</div>
-            </div>
-            <button class="collect-btn" onclick="closeModal()">Забрать выигрыш</button>
-        </div>
+    <div class="balance">💰 <span id="balance">5000</span> ₽</div>
+
+    <div class="right">
+        <button class="help">Как играть</button>
+    </div>
+</div>
+
+<div class="game-wrapper">
+
+    <!-- 3D фон -->
+    <canvas id="bg"></canvas>
+
+    <div id="grid" class="grid"></div>
+
+</div>
+
+<div class="controls">
+
+    <div class="mines">
+        <button onclick="changeMines(-1)">-</button>
+        <span id="mineCount">3</span>
+        <button onclick="changeMines(1)">+</button>
     </div>
 
-    <script>
-        const board = document.getElementById('board');
-        const winModal = document.getElementById('winModal');
-        const crossesContainer = document.getElementById('crossesContainer');
-        const totalCells = 25;
-        let clicks = 0;
-        const requiredClicks = 6; 
+    <input type="number" id="bet" value="100">
 
-        // Генерируем фоновые крестики
-        function generateBackgroundCrosses() {
-            const count = 15;
-            for (let i = 0; i < count; i++) {
-                const cross = document.createElement('div');
-                cross.classList.add('bg-cross');
-                cross.innerHTML = 'X';
-                cross.style.left = `${Math.random() * 90}%`;
-                cross.style.top = `${Math.random() * 90}%`;
-                cross.style.transform = `rotate(${Math.random() * 360}deg)`;
-                crossesContainer.appendChild(cross);
-            }
-        }
+    <button class="play" onclick="startGame()">Играть</button>
+    <button class="cashout" onclick="cashout()">Забрать</button>
 
-        function createBoard() {
-            board.innerHTML = '';
-            for (let i = 0; i < totalCells; i++) {
-                const cell = document.createElement('div');
-                cell.classList.add('cell');
-                
-                cell.addEventListener('click', function() {
-                    if (cell.classList.contains('revealed')) return;
-                    
-                    cell.classList.add('revealed');
-                    
-                    // Создаем 3D звезду
-                    const starImg = document.createElement('img');
-                    starImg.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 63,35 95,38 70,61 78,93 50,75 22,93 30,61 5,38 37,35" fill="%23ffbb00" stroke="%23ff8800" stroke-width="3"/></svg>';
-                    starImg.classList.add('star-3d');
-                    cell.appendChild(starImg);
-                    
-                    clicks++;
-                    
-                    if (clicks === requiredClicks) {
-                        setTimeout(() => {
-                            winModal.classList.add('active');
-                        }, 600);
-                    }
-                });
-                
-                board.appendChild(cell);
-            }
-        }
+    <div class="coef">Коэффициент: <span id="coef">1.00</span></div>
 
-        function closeModal() {
-            winModal.classList.remove('active');
-            clicks = 0;
-            createBoard();
-        }
+</div>
 
-        generateBackgroundCrosses();
-        createBoard();
-    </script>
+<div id="popup" class="popup hidden">
+    <h1>YOU’VE WON!</h1>
+    <p id="win">0 ₽</p>
+    <button onclick="closePopup()">Забрать выигрыш</button>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
