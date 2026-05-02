@@ -1,60 +1,106 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>Mines 3D</title>
-<link rel="stylesheet" href="style.css">
+body {
+    margin: 0;
+    background: radial-gradient(circle at center, #08121f, #020611 80%);
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    overflow: hidden;
+}
 
-<!-- 3D библиотека -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-</head>
+/* баланс (стеклянный эффект) */
+.balance {
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(0,255,255,0.2);
+}
 
-<body>
+/* клетки */
+.cell {
+    width: 80px;
+    height: 80px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #132c46, #0c1f33);
+    box-shadow: inset 0 0 10px #000, 0 5px 15px rgba(0,0,0,0.5);
+    transition: 0.2s;
+    position: relative;
+}
 
-<div class="top-bar">
-    <div class="left">
-        <button id="sound">🔊</button>
-    </div>
+.cell:hover {
+    transform: translateY(-5px);
+}
 
-    <div class="balance">💰 <span id="balance">5000</span> ₽</div>
+/* открытая клетка */
+.cell.open {
+    background: #050b14;
+}
 
-    <div class="right">
-        <button class="help">Как играть</button>
-    </div>
-</div>
+/* звезда */
+.cell.star::after {
+    content: "⭐";
+    font-size: 30px;
+    position: absolute;
+    top: 20px;
+    left: 22px;
+    animation: pop 0.3s ease;
+}
 
-<div class="game-wrapper">
+/* мина */
+.cell.mine::after {
+    content: "💣";
+    font-size: 28px;
+    position: absolute;
+    top: 22px;
+    left: 24px;
+    animation: explode 0.4s ease;
+}
 
-    <!-- 3D фон -->
-    <canvas id="bg"></canvas>
+@keyframes explode {
+    0% { transform: scale(0.5); }
+    100% { transform: scale(1.3); }
+}
 
-    <div id="grid" class="grid"></div>
+@keyframes pop {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
 
-</div>
+/* кнопки (3D) */
+.play, .cashout {
+    background: linear-gradient(145deg, #2c6cff, #1b4ed8);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 5px #163aa3;
+    transition: 0.1s;
+}
 
-<div class="controls">
+.play:active, .cashout:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px #163aa3;
+}
 
-    <div class="mines">
-        <button onclick="changeMines(-1)">-</button>
-        <span id="mineCount">3</span>
-        <button onclick="changeMines(1)">+</button>
-    </div>
+/* попап */
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: #0b1b2b;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    z-index: 999;
+    box-shadow: 0 0 40px rgba(0,255,255,0.3);
+    animation: popupShow 0.4s forwards;
+}
 
-    <input type="number" id="bet" value="100">
-
-    <button class="play" onclick="startGame()">Играть</button>
-    <button class="cashout" onclick="cashout()">Забрать</button>
-
-    <div class="coef">Коэффициент: <span id="coef">1.00</span></div>
-
-</div>
-
-<div id="popup" class="popup hidden">
-    <h1>YOU’VE WON!</h1>
-    <p id="win">0 ₽</p>
-    <button onclick="closePopup()">Забрать выигрыш</button>
-</div>
-
-<script src="script.js"></script>
-</body>
-</html>
+@keyframes popupShow {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
