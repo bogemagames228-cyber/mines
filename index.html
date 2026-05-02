@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines 1 Win - Глянец</title>
+    <title>Mines - Глянцевый симулятор</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #0c111a;
+            background-color: #080d19;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             color: #fff;
             min-height: 100vh;
@@ -34,45 +34,44 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .top-btn {
-            background: #182232;
+            background: #111a2e;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 10px 14px;
-            color: #a0aec0;
+            color: #8b9bb4;
             cursor: pointer;
             font-size: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .top-btn:hover {
-            background: #243348;
+            background: #192642;
             color: #fff;
+            border-color: rgba(255, 255, 255, 0.08);
         }
 
         .balance-box {
-            background: #182232;
+            background: #111a2e;
             padding: 10px 18px;
-            border-radius: 20px;
+            border-radius: 24px;
             font-size: 15px;
             font-weight: bold;
             color: #e2e8f0;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .balance-box::before {
-            content: '🪙';
-        }
-
-        /* Основная игровая область */
+        /* Игровая область */
         .main-game-area {
             display: flex;
             flex-direction: column;
@@ -82,135 +81,143 @@
             max-width: 450px;
         }
 
-        /* Оправа поля */
+        /* 3D Оправа поля */
         .game-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             max-width: 400px;
             aspect-ratio: 1;
-            background: linear-gradient(145deg, #131b2c 0%, #080c14 100%);
-            padding: 20px;
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(145deg, #162136 0%, #080d18 100%);
+            padding: 22px;
+            border-radius: 36px;
+            border: 1.5px solid rgba(255, 255, 255, 0.06);
             box-shadow: 
-                0 15px 30px rgba(0, 0, 0, 0.7),
-                inset 0 1px 6px rgba(255, 255, 255, 0.04),
-                0 0 16px rgba(13, 70, 85, 0.2);
-            margin-bottom: 15px;
+                0 20px 40px rgba(0, 0, 0, 0.8),
+                inset 0 3px 12px rgba(255, 255, 255, 0.05),
+                0 0 25px rgba(28, 122, 148, 0.18);
+            margin-bottom: 20px;
+            position: relative;
         }
 
-        /* Клетки - сдержанный глянец */
+        /* Глянцевые ячейки */
         .cell {
             aspect-ratio: 1;
-            background: linear-gradient(135deg, #197893 0%, #0d4857 100%);
-            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(29, 137, 166, 0.85) 0%, rgba(13, 63, 77, 0.92) 100%);
+            border-radius: 14px;
             cursor: pointer;
             position: relative;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
+            transform-style: preserve-3d;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, background 0.35s ease;
             box-shadow: 
-                inset 0 2px 5px rgba(255, 255, 255, 0.18),
-                inset 0 -3px 6px rgba(0, 0, 0, 0.4),
-                0 3px 6px rgba(0, 0, 0, 0.3);
+                inset 0 5px 12px rgba(255, 255, 255, 0.3),
+                inset 0 -4px 10px rgba(0, 0, 0, 0.5),
+                0 4px 8px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Нежный глянцевый блик */
+        /* Многослойные глянцевые блики (эффект стекла) */
         .cell::before {
             content: '';
             position: absolute;
             top: 4%;
-            left: 6%;
-            width: 88%;
-            height: 35%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%);
-            border-radius: 10px 10px 4px 4px;
+            left: 8%;
+            width: 84%;
+            height: 38%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 12px 12px 6px 6px;
             pointer-events: none;
         }
 
         .cell::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 12px;
-            box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.1);
+            top: 10%;
+            right: 8%;
+            width: 12%;
+            height: 80%;
+            background: linear-gradient(to right, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 50%;
             pointer-events: none;
         }
 
-        /* Плавное движение и реакция при наведении */
+        /* Анимация движения мыши */
         .cell:hover {
-            transform: translateY(-3px) scale(1.02);
-            background: linear-gradient(135deg, #1c88a6 0%, #0f5464 100%);
+            transform: translateY(-6px) scale(1.04) rotateX(4deg) rotateY(-2deg);
+            background: linear-gradient(135deg, rgba(35, 163, 199, 0.9) 0%, rgba(15, 74, 91, 0.95) 100%);
             box-shadow: 
-                inset 0 3px 7px rgba(255, 255, 255, 0.25),
-                inset 0 -3px 6px rgba(0, 0, 0, 0.3),
-                0 5px 12px rgba(13, 72, 87, 0.3);
+                inset 0 7px 16px rgba(255, 255, 255, 0.4),
+                inset 0 -4px 12px rgba(0, 0, 0, 0.4),
+                0 12px 22px rgba(28, 122, 148, 0.4),
+                0 0 10px rgba(255, 255, 255, 0.2);
         }
 
         .cell:active {
-            transform: translateY(1px) scale(0.98);
+            transform: translateY(2px) scale(0.96);
         }
 
+        /* Открытая ячейка */
         .cell.revealed {
-            background: #0e1926;
+            background: #0b1524;
             cursor: default;
-            box-shadow: 
-                inset 0 3px 10px rgba(0, 0, 0, 0.7),
-                0 1px 3px rgba(0, 0, 0, 0.3);
             transform: none !important;
+            box-shadow: 
+                inset 0 4px 12px rgba(0, 0, 0, 0.8),
+                0 1px 4px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.05);
         }
 
-        .cell.revealed::before {
+        .cell.revealed::before, 
+        .cell.revealed::after {
             display: none;
         }
 
         .cell span {
-            font-size: 30px;
+            font-size: 28px;
             color: #fbbf24;
-            text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.8), 0 0 4px #000;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100%;
-            animation: popIn 0.3s ease-out forwards;
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            80% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
+            0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+            80% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
 
-        /* Управление */
+        /* Панель управления */
         .controls {
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            background: #101622;
+            background: #0d1524;
             padding: 18px;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-            margin-top: 10px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .control-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #151d2c;
+            background: #111a2c;
             padding: 10px 14px;
-            border-radius: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
         }
 
         .max-win-box {
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: #a0aec0;
+            gap: 8px;
+            color: #8b9bb4;
             font-size: 13px;
         }
 
@@ -222,10 +229,11 @@
         .traps-selector {
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: #192231;
-            border-radius: 8px;
-            padding: 2px 6px;
+            gap: 14px;
+            background: #162138;
+            border-radius: 10px;
+            padding: 2px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .traps-btn {
@@ -234,22 +242,30 @@
             color: #fff;
             font-size: 18px;
             cursor: pointer;
-            padding: 4px 10px;
+            padding: 4px 8px;
+            transition: color 0.2s;
+        }
+
+        .traps-btn:hover {
+            color: #38bdf8;
         }
 
         .traps-number {
             font-weight: bold;
             font-size: 15px;
+            min-width: 20px;
+            text-align: center;
         }
 
         .bet-input-wrapper {
             display: flex;
             align-items: center;
-            background: #192231;
-            border-radius: 8px;
+            background: #162138;
+            border-radius: 10px;
             padding: 4px 10px;
             width: 100%;
             justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .bet-btn {
@@ -259,6 +275,11 @@
             font-size: 16px;
             cursor: pointer;
             padding: 4px 8px;
+            transition: color 0.2s;
+        }
+
+        .bet-btn:hover {
+            color: #38bdf8;
         }
 
         .bet-input {
@@ -269,12 +290,13 @@
             width: 100px;
             text-align: center;
             font-weight: bold;
+            outline: none;
         }
 
         .bet-currency {
-            color: #a0aec0;
+            color: #8b9bb4;
             font-size: 13px;
-            margin-left: -10px;
+            margin-right: 4px;
         }
 
         .play-btn {
@@ -283,16 +305,18 @@
             color: #fff;
             border: none;
             padding: 14px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .play-btn:hover {
             background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
         }
     </style>
 </head>
