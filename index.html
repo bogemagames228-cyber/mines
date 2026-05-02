@@ -4,16 +4,36 @@ HTML
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines - Звезды</title>
+    <title>Mines Signals Simulation</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Игра "Звезды" (Mines)</h2>
-        <div id="game-board" class="grid"></div>
-        <button id="start-btn" onclick="startGame()">Начать игру</button>
-        <p id="result-text"></p>
+    <div class="main-wrapper">
+        <header>
+            <h1>СИМУЛЯТОР СИГНАЛОВ MINES</h1>
+        </header>
+        
+        <div class="game-container">
+            <div class="field-block">
+                <h2>ТВОЕ ПОЛЕ (ИГРА)</h2>
+                <div id="game-board" class="grid-field"></div>
+            </div>
+
+            <div class="field-block">
+                <h2>СИГНАЛ (СХЕМА)</h2>
+                <div id="signal-board" class="grid-field signal-only"></div>
+            </div>
+        </div>
+
+        <div class="controls-wrapper">
+            <div class="input-group">
+                <label>Количество мин:</label>
+                <input type="number" id="mines-count" value="3" min="1" max="24">
+            </div>
+            <button id="get-signal-btn" class="action-btn" onclick="generateRound()">ПОЛУЧИТЬ СИГНАЛ</button>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
