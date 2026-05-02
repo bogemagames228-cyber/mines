@@ -1,48 +1,91 @@
 JavaScript
-const boardSize = 5;
-const totalMines = 3;
-let board = [];
+const GRID_SIZE = 5;
+const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
 let gameActive = false;
 
-function startGame() {
-    const gameBoard = document.getElementById('game-board');
-    gameBoard.innerHTML = '';
-    board = [];
-    gameActive = true;
-    document.getElementById('result-text').textContent = '';
+function generateRound() {
+    const minesCountInput = document.getElementById('mines-count');
+    let minesCount = parseInt(minesCountInput.value);
 
-    let cellsCount = boardSize * boardSize;
-    let mines = Array(cellsCount).fill(0);
-    
-    // Расставляем бомбы (мины)
-    for (let i = 0; i < totalMines; i++) {
-        let randomIndex = Math.floor(Math.random() * cellsCount);
-        if (mines[randomIndex] === 1) {
-            i--;
-        } else {
-            mines[randomIndex] = 1;
+    // Валидация количества мин
+    if (isNaN(minesCount) || minesCount < 1 || minesCount > 24) {
+        alert("Количество мин должно быть от 1 до 24.");
+        minesCountInput.value = 3;
+        return;
+    }
+
+    const gameBoard = document.getElementById('game-board');
+    const signalBoard = document.getElementById('signal-board');
+
+    // Очищаем оба поля
+    gameBoard.innerHTML = '';
+    signalBoard.innerHTML = '';
+    gameActive = true;
+
+    // Генерируем массив мин (0 - пусто, 1 - мина)
+    let minesLayout = new Array(TOTAL_CELLS).fill(0);
+    let placedMines = 0;
+    while (placedMines < minesCount) {
+        let randomIndex = Math.floor(Math.random() * TOTAL_CELLS);
+        if (minesLayout[randomIndex] === 0) {
+            minesLayout[randomIndex] = 1;
+            placedMines++;
         }
     }
 
-    for (let i = 0; i < cellsCount; i++) {
-        let cell = document.createElement('div');
-        cell.classList.add('cell');
-        cell.dataset.index = i;
-        cell.dataset.mine = mines[i];
+    // Заполняем оба поля
+    for (let i = 0; i < TOTAL_CELLS; i++) {
+        const isMine = minesLayout[i] === 1;
+
+        // Создаем ячейку для Игрового поля
+        const gameCell = document.createElement('div');
+        gameCell.classList.add('cell');
+        gameCell.dataset.mine = isMine ? 'true' : 'false';
         
-        cell.addEventListener('click', function() {
-            if (!gameActive) return;
-            
-            if (this.dataset.mine === '1') {
-                this.innerHTML = '💣';
-                this.style.backgroundColor = '#ef4444';
-                gameActive = false;
-                document.getElementById('result-text').textContent = 'Вы проиграли!';
-            } else {
-                this.innerHTML = '⭐';
-                this.style.backgroundColor = '#22c55e';
-            }
-        });
+        // Логика нажатия на игровом поле
+        gameCell.addEventListener('click', onGameCellClick);
+        gameBoard.appendChild(gameCell);
+
+        // Создаем ячейку для поля Сгнала
+        const signalCell = document.createElement('div');
+        signalCell.classList.add('cell');
         
-        gameBoard.appendChild(cell);
+        // Если это не мина, подсвечиваем её на поле сигнала
+        if (!isMine) {
+            signalCell.classList.add('signal-safe');
+        }
+        
+        signalBoard.appendChild(signalCell);
     }
+}
+
+function onGameCellClick() {
+    if (!gameActive) return;
+    if (this.classList.contains('revealed')) return;
+
+    this.classList.add('revealed');
+
+    if (this.dataset.mine === 'true') {
+        // Проигрыш
+        this.innerHTML = '💣';
+        this.classList.add('mine');
+        gameActive = false;
+        setTimeout(() => alert('БА-БАХ! Игра окончена.'), 100);
+        revealAllMines();
+    } else {
+        // Успех
+        this.innerHTML = '⭐';
+        this.classList.add('safe');
+    }
+}
+
+// Показывает все мины при проигрыше
+function revealAllMines() {
+    const gameCells = document.querySelectorAll('#game-board .cell');
+    gameCells.forEach(cell => {
+        if (cell.dataset.mine === 'true') {
+            cell.classList.add('revealed', 'mine');
+            cell.innerHTML = '💣';
+        }
+    });
+}
