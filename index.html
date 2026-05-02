@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #080d19;
+            background-color: #050812;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             color: #fff;
             min-height: 100vh;
@@ -23,6 +23,106 @@
             justify-content: space-between;
             padding: 20px 20px 40px;
             position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Фоновые эффекты: трещины, камни и искры */
+        .bg-decorations {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .spark {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #38bdf8, 0 0 12px rgba(56, 189, 248, 0.6);
+            animation: floatSpark 4s infinite ease-in-out;
+            opacity: 0;
+        }
+
+        @keyframes floatSpark {
+            0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-300px) translateX(50px) scale(0.4); opacity: 0; }
+        }
+
+        .crack {
+            position: absolute;
+            background: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 5px rgba(56, 189, 248, 0.3);
+        }
+
+        .crack-1 {
+            top: 30%;
+            left: 10%;
+            width: 200px;
+            height: 2px;
+            transform: rotate(-25deg);
+        }
+        .crack-2 {
+            top: 55%;
+            right: 15%;
+            width: 160px;
+            height: 3px;
+            transform: rotate(35deg);
+        }
+        .crack-3 {
+            bottom: 25%;
+            left: 25%;
+            width: 180px;
+            height: 2px;
+            transform: rotate(5deg);
+        }
+
+        /* Камни и алмазы на фоне */
+        .gem {
+            position: absolute;
+            font-size: 24px;
+            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+            animation: pulseGem 2.5s infinite alternate;
+        }
+
+        .gem-1 { top: 35%; left: 12%; transform: rotate(15deg); }
+        .gem-2 { top: 60%; right: 18%; transform: rotate(-20deg); }
+        .gem-3 { bottom: 28%; left: 28%; }
+
+        /* Нижний ряд камней с алмазами */
+        .bottom-stones {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(to top, #050812, transparent);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 40px;
+            padding-bottom: 15px;
+            opacity: 0.8;
+        }
+        .bottom-gem {
+            font-size: 32px;
+            filter: drop-shadow(0 0 10px #38bdf8);
+            animation: floatGems 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatGems {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        @keyframes pulseGem {
+            0% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 6px rgba(56, 189, 248, 0.5)); }
+            100% { transform: scale(1.12) rotate(4deg); filter: brightness(1.4) drop-shadow(0 0 14px rgba(56, 189, 248, 0.8)); }
         }
 
         .top-bar {
@@ -76,6 +176,7 @@
             justify-content: center;
             width: 100%;
             max-width: 450px;
+            margin-bottom: 60px;
         }
 
         .game-board {
@@ -85,10 +186,10 @@
             width: 100%;
             max-width: 400px;
             aspect-ratio: 1;
-            background: linear-gradient(145deg, #162136 0%, #080d18 100%);
+            background: linear-gradient(145deg, rgba(22, 33, 54, 0.7) 0%, rgba(8, 13, 24, 0.85) 100%);
             padding: 22px;
             border-radius: 36px;
-            border: 1.5px solid rgba(255, 255, 255, 0.06);
+            border: 1.5px solid rgba(56, 189, 248, 0.2);
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.8),
                 inset 0 3px 12px rgba(255, 255, 255, 0.05),
@@ -99,7 +200,7 @@
 
         .cell {
             aspect-ratio: 1;
-            background: linear-gradient(135deg, rgba(29, 137, 166, 0.85) 0%, rgba(13, 63, 77, 0.92) 100%);
+            background: linear-gradient(135deg, rgba(29, 137, 166, 0.75) 0%, rgba(13, 63, 77, 0.82) 100%);
             border-radius: 14px;
             cursor: pointer;
             position: relative;
@@ -218,7 +319,7 @@
         }
 
         .max-win-box span {
-            color: #10b981; /* Green color */
+            color: #10b981;
             font-weight: bold;
         }
 
@@ -311,7 +412,7 @@
 
         .play-btn {
             width: 100%;
-            background: #0077ff; /* Blue */
+            background: #0077ff;
             color: #fff;
             border: none;
             padding: 14px;
@@ -341,11 +442,12 @@
             background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
         }
+        
         .collect-btn-active:hover {
             background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
         }
 
-        /* Modal / Win Notification */
+        /* Модальное окно */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -403,29 +505,43 @@
             100% { transform: scale(1.08); }
         }
 
+        .sparkling-star {
+            font-size: 38px;
+            color: #fbbf24;
+            text-shadow: 0 0 12px #fbbf24, 0 0 20px #ff7700;
+            animation: pulseStar 1.5s infinite alternate;
+        }
+
+        @keyframes pulseStar {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            100% { transform: scale(1.15); opacity: 1; }
+        }
+
         .modal-title {
             color: #10b981;
-            font-size: 17px;
+            font-size: 18px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
+            letter-spacing: 1.8px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
         }
 
         .modal-amount {
-            font-size: 36px;
+            font-size: 38px;
             font-weight: 800;
             color: #ffffff;
-            margin-bottom: 24px;
-            text-shadow: 0 2px 10px rgba(255,255,255,0.2);
+            margin-bottom: 28px;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.3);
         }
 
         .modal-btn {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #fff;
             border: none;
-            padding: 14px 28px;
-            border-radius: 14px;
-            font-size: 15px;
+            padding: 16px 28px;
+            border-radius: 16px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
@@ -437,7 +553,6 @@
             transform: translateY(-1px);
         }
 
-        /* Confetti Container */
         .confetti {
             position: absolute;
             width: 10px;
@@ -460,21 +575,27 @@
 </head>
 <body>
 
-    <!-- Верхняя панель -->
+    <div class="bg-decorations" id="bg-decorations">
+        <div class="crack crack-1"></div>
+        <div class="crack crack-2"></div>
+        <div class="crack crack-3"></div>
+
+        <div class="gem gem-1">💎</div>
+        <div class="gem gem-2">💠</div>
+        <div class="gem gem-3">🔷</div>
+    </div>
+
     <div class="top-bar">
         <button class="top-btn">🎵</button>
         <div class="balance-box" id="balance-amount">10 539,61 ₽</div>
         <button class="top-btn">❓ Как играть</button>
     </div>
 
-    <!-- Игровая область -->
     <div class="main-game-area">
         <div class="game-board" id="board">
-            <!-- Клетки генерируются через JS -->
-        </div>
+            </div>
 
         <div class="controls">
-            <!-- 3D Панель -->
             <div class="panel-3d">
                 <div class="max-win-box">
                     <svg class="star-icon-small" viewBox="0 0 100 100">
@@ -502,22 +623,25 @@
         </div>
     </div>
 
-    <!-- Модальное окно выигрыша -->
+    <div class="bottom-stones">
+        <div class="bottom-gem">💎</div>
+        <div class="bottom-gem">💠</div>
+        <div class="bottom-gem">🔷</div>
+        <div class="bottom-gem">💎</div>
+        <div class="bottom-gem">💠</div>
+    </div>
+
     <div class="modal-overlay" id="win-modal">
         <div class="modal-card">
             <div class="modal-icon-wrapper">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
+                <div class="sparkling-star">★</div>
             </div>
-            <div class="modal-title">Выигрыш зачислен!</div>
+            <div class="modal-title">ВЫ ВЫИГРАЛИ!</div>
             <div class="modal-amount" id="modal-win-amount">0.00 ₽</div>
-            <button class="modal-btn" onclick="closeModal()">Отлично</button>
+            <button class="modal-btn" onclick="closeModal()">Забрать выигрыш</button>
         </div>
     </div>
 
-    <!-- Контейнер для конфетти -->
     <div id="confetti-container" style="position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 100; overflow: hidden;"></div>
 
     <script>
@@ -530,6 +654,7 @@
         const panelLabel = document.getElementById('panel-label');
         const trapsSelector = document.getElementById('traps-selector');
         const betWrapper = document.getElementById('bet-input-wrapper');
+        const bgDecorations = document.getElementById('bg-decorations');
         
         let traps = 3;
         let currentBet = 0.30;
@@ -538,6 +663,19 @@
         let gameActive = false;
         let revealedStars = 0;
         let currentMultiplier = 1.00;
+        
+        // Генерация искорок
+        function createSparks() {
+            for (let i = 0; i < 20; i++) {
+                const spark = document.createElement('div');
+                spark.classList.add('spark');
+                spark.style.left = Math.random() * 100 + '%';
+                spark.style.top = (30 + Math.random() * 50) + '%';
+                spark.style.animationDelay = Math.random() * 4 + 's';
+                bgDecorations.appendChild(spark);
+            }
+        }
+        createSparks();
         
         function updateBalanceUI() {
             balanceEl.textContent = balance.toLocaleString('ru-RU', {
@@ -570,7 +708,6 @@
 
         function handleGameAction() {
             if (!gameActive) {
-                // Игра начинается
                 if (balance < currentBet) {
                     alert("Недостаточно средств на балансе!");
                     return;
@@ -595,7 +732,6 @@
 
                 renderBoard();
             } else {
-                // Забрать выигрыш
                 collectWinnings();
             }
         }
@@ -616,7 +752,6 @@
                     revealedStars++;
                     currentMultiplier = 1.00 + (revealedStars * 0.38);
                     
-                    // Обновляем панель коэффициентом и выигрышем в реальном времени
                     maxWinEl.textContent = "x" + currentMultiplier.toFixed(2);
                     playBtn.textContent = "Забрать " + (currentBet * currentMultiplier).toFixed(2) + " ₽";
                 });
@@ -633,7 +768,6 @@
             balance += wonAmount;
             updateBalanceUI();
 
-            // Показываем модальное окно с конфетти
             showWinModal(wonAmount.toFixed(2) + ' ₽');
             
             gameActive = false;
@@ -649,6 +783,7 @@
             
             trapsSelector.style.opacity = '1';
             betWrapper.style.opacity = '1';
+            trapsSelector.style.pointerEvents = 'all';
             betWrapper.style.pointerEvents = 'all';
         }
 
@@ -721,7 +856,6 @@
                 confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
                 confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
                 
-                // размеры
                 const size = Math.random() * 8 + 4;
                 confetti.style.width = size + 'px';
                 confetti.style.height = size + 'px';
