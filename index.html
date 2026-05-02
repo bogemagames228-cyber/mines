@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines 1 Win - 3D Дизайн</title>
+    <title>Mines 1 Win</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,67 +13,105 @@
         }
 
         body {
-            /* Фон страницы как в оригинале */
-            background-color: #0d121d; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: white;
+            background-color: #0c111a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #fff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            justify-content: space-between;
+            padding: 20px 20px 40px;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 500px;
+        /* Верхняя панель */
+        .top-bar {
             width: 100%;
-            text-align: center;
+            max-width: 450px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
         }
 
-        header h1 {
-            font-size: 24px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 30px;
-            color: #ffffff;
-            /* Легкое свечение для заголовка */
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+        .top-btn {
+            background: #182232;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #a0aec0;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, color 0.2s;
         }
 
-        /* Основная сетка */
+        .top-btn:hover {
+            background: #243348;
+            color: #fff;
+        }
+
+        .balance-box {
+            background: #182232;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .balance-box::before {
+            content: '🪙';
+        }
+
+        /* Основная игровая область */
+        .main-game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        /* Игровая сетка */
         .game-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px; /* Отступы между кнопками */
-            margin: 0 auto;
-            max-width: 400px;
+            gap: 12px;
             width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
+            background: #0d131f;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
         }
 
         /* --- НОВЫЙ 3D ДИЗАЙН КЛЕТОЧЕК --- */
         .cell {
-            aspect-ratio: 1; /* Квадратные */
-            /* Основной цвет - темно-бирюзовый градиент */
+            aspect-ratio: 1;
             background: linear-gradient(135deg, #177a94 0%, #115c70 100%);
-            border-radius: 10px; /* Закругленные углы */
+            border-radius: 10px;
             cursor: pointer;
             position: relative;
             transition: all 0.2s ease;
-            
-            /* Сложные тени для создания 3D объема и металлического ободка */
             box-shadow: 
-                /* Металлический ободок снаружи */
                 0 0 0 1.5px #1c2638,
-                /* Тень под ободком для глубины */
                 0 4px 6px rgba(0, 0, 0, 0.4),
-                /* Светлый блик внутри сверху для глянца */
                 inset 0 2px 4px rgba(255, 255, 255, 0.15),
-                /* Темная тень внутри снизу для объема */
                 inset 0 -2px 6px rgba(0, 0, 0, 0.3);
         }
 
-        /* Глянцевый отблеск (светлое пятно в центре) */
         .cell::after {
             content: '';
             position: absolute;
@@ -86,34 +124,30 @@
             pointer-events: none;
         }
 
-        /* Эффект при наведении */
         .cell:hover {
-            transform: translateY(-2px); /* Легкое всплытие */
-            background: linear-gradient(135deg, #1c91af 0%, #15738c 100%); /* Чуть светлее */
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #1c91af 0%, #15738c 100%);
             box-shadow: 
                 0 0 0 1.5px #1c2638,
-                0 6px 12px rgba(0, 0, 0, 0.5), /* Тень больше */
+                0 6px 12px rgba(0, 0, 0, 0.5),
                 inset 0 2px 4px rgba(255, 255, 255, 0.2),
                 inset 0 -2px 6px rgba(0, 0, 0, 0.3);
         }
 
-        /* Эффект при нажатии */
         .cell:active {
-            transform: translateY(1px); /* Вдавливание */
+            transform: translateY(1px);
             box-shadow: 
                 0 0 0 1.5px #1c2638,
-                0 2px 4px rgba(0, 0, 0, 0.3), /* Тень меньше */
-                inset 0 1px 2px rgba(0, 0, 0, 0.2); /* Внутренняя тень сильнее */
+                0 2px 4px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(0, 0, 0, 0.2);
         }
-        /* --- КОНЕЦ НОВОГО ДИЗАЙНА --- */
 
-        /* Состояние открытой клетки */
         .cell.revealed {
-            background: #111827; /* Темный фон */
+            background: #111827;
             cursor: default;
             box-shadow: 
                 0 0 0 1.5px #1c2638,
-                inset 0 2px 8px rgba(0, 0, 0, 0.6); /* Глубокая внутренняя тень */
+                inset 0 2px 8px rgba(0, 0, 0, 0.6);
         }
 
         .cell.revealed:hover {
@@ -121,38 +155,195 @@
             background: #111827;
         }
 
-        /* Стили для звезды */
         .cell span {
             font-size: 32px;
-            /* Желто-оранжевый цвет для звезды */
             color: #fbbf24;
-            /* Свечение звезды */
             text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        /* --- КОНЕЦ 3D ДИЗАЙНА --- */
+
+        /* Панель управления (Выбор мин и ставки) */
+        .controls {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #101622;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            margin-top: 10px;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #151d2c;
+            padding: 10px 14px;
+            border-radius: 10px;
+        }
+
+        .max-win-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #a0aec0;
+            font-size: 13px;
+        }
+
+        .max-win-box span {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .traps-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #192231;
+            border-radius: 8px;
+            padding: 2px 6px;
+        }
+
+        .traps-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 10px;
+        }
+
+        .traps-number {
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .bet-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #192231;
+            border-radius: 8px;
+            padding: 4px 10px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .bet-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .bet-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            width: 100px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .bet-currency {
+            color: #a0aec0;
+            font-size: 13px;
+            margin-left: -10px;
+        }
+
+        .play-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .play-btn:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>ИСПЫТАЙ СВОЮ УДАЧУ В MINES 1 WIN</h1>
-        </header>
 
+    <div class="top-bar">
+        <button class="top-btn">🎵</button>
+        <div class="balance-box">10 539,61 Br</div>
+        <button class="top-btn">❓ Как играть</button>
+    </div>
+
+    <div class="main-game-area">
         <div class="game-board" id="board">
             </div>
+
+        <div class="controls">
+            <div class="control-row">
+                <div class="max-win-box">
+                    ⭐ Макс. выигрыш: <span>0 Br</span>
+                </div>
+                <div class="traps-selector">
+                    <button class="traps-btn" onclick="changeTraps(-1)">‹</button>
+                    <span class="traps-number" id="traps-count">3</span>
+                    <button class="traps-btn" onclick="changeTraps(1)">›</button>
+                </div>
+            </div>
+
+            <div class="control-row">
+                <div class="bet-input-wrapper">
+                    <button class="bet-btn" onclick="adjustBet(-10)">-</button>
+                    <input type="text" class="bet-input" id="bet-amount" value="0.00" readonly>
+                    <span class="bet-currency">Br</span>
+                    <button class="bet-btn" onclick="adjustBet(10)">+</button>
+                </div>
+            </div>
+
+            <button class="play-btn" onclick="startGame()">Играть</button>
+        </div>
     </div>
 
     <script>
-        // ЛОГИКА ИГРЫ (ОСТАЛАСЬ ПРЕЖНЕЙ)
         const board = document.getElementById('board');
-        const totalCells = 25;
+        const trapsCountEl = document.getElementById('traps-count');
+        const betAmountEl = document.getElementById('bet-amount');
+        
+        let traps = 3;
+        let currentBet = 0.00;
 
-        for (let i = 0; i < totalCells; i++) {
+        function changeTraps(val) {
+            traps = Math.max(1, Math.min(24, traps + val));
+            trapsCountEl.textContent = traps;
+        }
+
+        function adjustBet(val) {
+            currentBet = Math.max(0.00, currentBet + val);
+            betAmountEl.value = currentBet.toFixed(2);
+        }
+
+        function startGame() {
+            alert("Игра началась!");
+        }
+
+        // Генерация 25 клеток
+        for (let i = 0; i < 25; i++) {
             const cell = document.createElement('div');
             cell.classList.add('cell');
             
             cell.addEventListener('click', function() {
                 if (cell.classList.contains('revealed')) return;
-                
                 cell.classList.add('revealed');
                 
                 const starSpan = document.createElement('span');
