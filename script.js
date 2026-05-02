@@ -1,91 +1,96 @@
-JavaScript
-const GRID_SIZE = 5;
-const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
+let mines = [];
+let mineCount = 3;
+let opened = 0;
 let gameActive = false;
+let balance = 5000;
+let bet = 100;
 
-function generateRound() {
-    const minesCountInput = document.getElementById('mines-count');
-    let minesCount = parseInt(minesCountInput.value);
+const grid = document.getElementById("grid");
 
-    // Валидация количества мин
-    if (isNaN(minesCount) || minesCount < 1 || minesCount > 24) {
-        alert("Количество мин должно быть от 1 до 24.");
-        minesCountInput.value = 3;
+function createGrid() {
+    grid.innerHTML = "";
+    for (let i = 0; i < 25; i++) {
+        let cell = document.createElement("div");
+        cell.className = "cell";
+
+        cell.onclick = () => clickCell(cell, i);
+
+        grid.appendChild(cell);
+    }
+}
+
+function startGame() {
+    bet = parseFloat(document.getElementById("bet").value);
+
+    if (bet > balance) {
+        alert("Недостаточно средств");
         return;
     }
 
-    const gameBoard = document.getElementById('game-board');
-    const signalBoard = document.getElementById('signal-board');
+    balance -= bet;
+    updateBalance();
 
-    // Очищаем оба поля
-    gameBoard.innerHTML = '';
-    signalBoard.innerHTML = '';
+    mines = [];
+    opened = 0;
     gameActive = true;
 
-    // Генерируем массив мин (0 - пусто, 1 - мина)
-    let minesLayout = new Array(TOTAL_CELLS).fill(0);
-    let placedMines = 0;
-    while (placedMines < minesCount) {
-        let randomIndex = Math.floor(Math.random() * TOTAL_CELLS);
-        if (minesLayout[randomIndex] === 0) {
-            minesLayout[randomIndex] = 1;
-            placedMines++;
-        }
+    while (mines.length < mineCount) {
+        let r = Math.floor(Math.random() * 25);
+        if (!mines.includes(r)) mines.push(r);
     }
 
-    // Заполняем оба поля
-    for (let i = 0; i < TOTAL_CELLS; i++) {
-        const isMine = minesLayout[i] === 1;
-
-        // Создаем ячейку для Игрового поля
-        const gameCell = document.createElement('div');
-        gameCell.classList.add('cell');
-        gameCell.dataset.mine = isMine ? 'true' : 'false';
-        
-        // Логика нажатия на игровом поле
-        gameCell.addEventListener('click', onGameCellClick);
-        gameBoard.appendChild(gameCell);
-
-        // Создаем ячейку для поля Сгнала
-        const signalCell = document.createElement('div');
-        signalCell.classList.add('cell');
-        
-        // Если это не мина, подсвечиваем её на поле сигнала
-        if (!isMine) {
-            signalCell.classList.add('signal-safe');
-        }
-        
-        signalBoard.appendChild(signalCell);
-    }
+    createGrid();
 }
 
-function onGameCellClick() {
+function clickCell(cell, i) {
     if (!gameActive) return;
-    if (this.classList.contains('revealed')) return;
 
-    this.classList.add('revealed');
-
-    if (this.dataset.mine === 'true') {
-        // Проигрыш
-        this.innerHTML = '💣';
-        this.classList.add('mine');
+    if (mines.includes(i)) {
+        cell.classList.add("mine");
         gameActive = false;
-        setTimeout(() => alert('БА-БАХ! Игра окончена.'), 100);
-        revealAllMines();
-    } else {
-        // Успех
-        this.innerHTML = '⭐';
-        this.classList.add('safe');
+        alert("💣 Проигрыш");
+        return;
     }
+
+    cell.classList.add("star");
+    opened++;
+
+    let coef = (1 + opened * 0.4).toFixed(2);
+    document.getElementById("coef").innerText = coef;
 }
 
-// Показывает все мины при проигрыше
-function revealAllMines() {
-    const gameCells = document.querySelectorAll('#game-board .cell');
-    gameCells.forEach(cell => {
-        if (cell.dataset.mine === 'true') {
-            cell.classList.add('revealed', 'mine');
-            cell.innerHTML = '💣';
-        }
-    });
+function cashout() {
+    if (!gameActive) return;
+
+    let coef = parseFloat(document.getElementById("coef").innerText);
+    let win = bet * coef;
+
+    balance += win;
+    updateBalance();
+
+    showWin(win);
+    gameActive = false;
 }
+
+function updateBalance() {
+    document.getElementById("balance").innerText = balance.toFixed(2);
+}
+
+function showWin(amount) {
+    document.getElementById("popup").classList.remove("hidden");
+    document.getElementById("win").innerText = amount.toFixed(2) + " ₽";
+}
+
+function closePopup() {
+    document.getElementById("popup").classList.add("hidden");
+}
+
+function changeMines(val) {
+    mineCount += val;
+    if (mineCount < 1) mineCount = 1;
+    if (mineCount > 20) mineCount = 20;
+    document.getElementById("mineCount").innerText = mineCount;
+}
+
+createGrid();
+updateBalance();
