@@ -309,59 +309,9 @@
             font-weight: bold;
         }
 
-        .win-display {
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            background: #142036;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            margin-bottom: 4px;
-        }
-
-        .win-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .win-title {
-            color: #8b9bb4;
-            font-size: 12px;
-        }
-
-        .win-multiplier {
-            color: #38bdf8;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .win-amount {
-            color: #fbbf24;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .collect-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .collect-btn:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            transform: translateY(-1px);
-        }
-
         .play-btn {
             width: 100%;
-            background: #0077ff; /* Голубой */
+            background: #0077ff; /* Blue */
             color: #fff;
             border: none;
             padding: 14px;
@@ -386,6 +336,126 @@
             box-shadow: none;
             transform: none;
         }
+
+        .collect-btn-active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+        }
+        .collect-btn-active:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        }
+
+        /* Modal / Win Notification */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(8, 13, 25, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-card {
+            background: linear-gradient(145deg, #10192d 0%, #070e1b 100%);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 32px;
+            padding: 40px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(16, 185, 129, 0.2);
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: rgba(16, 185, 129, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            animation: pulseIcon 2s infinite alternate;
+        }
+
+        @keyframes pulseIcon {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.08); }
+        }
+
+        .modal-title {
+            color: #10b981;
+            font-size: 17px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .modal-amount {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 24px;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.2);
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+        }
+
+        /* Confetti Container */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            z-index: 101;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(500px) rotate(720deg);
+            }
+        }
     </style>
 </head>
 <body>
@@ -403,26 +473,16 @@
             <!-- Клетки генерируются через JS -->
         </div>
 
-        <!-- Дополнительный блок коэффициентов -->
-        <div class="win-display" id="win-display">
-            <div class="win-info">
-                <span class="win-title">Текущий выигрыш:</span>
-                <span class="win-multiplier" id="display-coeff">x1.00</span>
-                <span class="win-amount" id="display-win">0.00 ₽</span>
-            </div>
-            <button class="collect-btn" onclick="collectWinnings()">Забрать</button>
-        </div>
-
         <div class="controls">
-            <!-- Первая панель с 3Д-звездой, макс. выигрышем зелеными буквами, и валютой в рублях -->
+            <!-- 3D Панель -->
             <div class="panel-3d">
                 <div class="max-win-box">
                     <svg class="star-icon-small" viewBox="0 0 100 100">
                         <polygon points="50,5 63,35 95,38 70,59 78,92 50,74 22,92 30,59 5,38 37,35" fill="#ffaa00" stroke="#ffcc00" stroke-width="2"/>
                     </svg>
-                    Макс. выигрыш: <span id="max-win">0.00 ₽</span>
+                    <span id="panel-label">Макс. выигрыш:</span> <span id="max-win">0.00 ₽</span>
                 </div>
-                <div class="traps-selector">
+                <div class="traps-selector" id="traps-selector">
                     <button class="traps-btn" onclick="changeTraps(-1)">‹</button>
                     <span class="traps-number" id="traps-count">3</span>
                     <button class="traps-btn" onclick="changeTraps(1)">›</button>
@@ -430,7 +490,7 @@
             </div>
 
             <div class="control-row">
-                <div class="bet-input-wrapper">
+                <div class="bet-input-wrapper" id="bet-input-wrapper">
                     <button class="bet-btn" onclick="adjustBet(-1)">-</button>
                     <input type="text" class="bet-input" id="bet-amount" value="0.30" readonly>
                     <span class="bet-currency">₽</span>
@@ -438,9 +498,27 @@
                 </div>
             </div>
 
-            <button class="play-btn" id="play-button" onclick="startGame()">Играть</button>
+            <button class="play-btn" id="play-button" onclick="handleGameAction()">Играть</button>
         </div>
     </div>
+
+    <!-- Модальное окно выигрыша -->
+    <div class="modal-overlay" id="win-modal">
+        <div class="modal-card">
+            <div class="modal-icon-wrapper">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <div class="modal-title">Выигрыш зачислен!</div>
+            <div class="modal-amount" id="modal-win-amount">0.00 ₽</div>
+            <button class="modal-btn" onclick="closeModal()">Отлично</button>
+        </div>
+    </div>
+
+    <!-- Контейнер для конфетти -->
+    <div id="confetti-container" style="position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 100; overflow: hidden;"></div>
 
     <script>
         const board = document.getElementById('board');
@@ -448,10 +526,10 @@
         const betAmountEl = document.getElementById('bet-amount');
         const balanceEl = document.getElementById('balance-amount');
         const playBtn = document.getElementById('play-button');
-        const winDisplay = document.getElementById('win-display');
-        const displayCoeff = document.getElementById('display-coeff');
-        const displayWin = document.getElementById('display-win');
         const maxWinEl = document.getElementById('max-win');
+        const panelLabel = document.getElementById('panel-label');
+        const trapsSelector = document.getElementById('traps-selector');
+        const betWrapper = document.getElementById('bet-input-wrapper');
         
         let traps = 3;
         let currentBet = 0.30;
@@ -459,7 +537,6 @@
         
         let gameActive = false;
         let revealedStars = 0;
-        let baseMultiplier = 1.00;
         let currentMultiplier = 1.00;
         
         function updateBalanceUI() {
@@ -485,27 +562,42 @@
         }
 
         function recalculateMaxWin() {
+            if (gameActive) return;
             let maxPotential = currentBet * Math.pow(1.2, (25 - traps));
             maxWinEl.textContent = maxPotential.toFixed(2) + ' ₽';
         }
         recalculateMaxWin();
 
-        function startGame() {
-            if (balance < currentBet) {
-                alert("Недостаточно средств на балансе!");
-                return;
+        function handleGameAction() {
+            if (!gameActive) {
+                // Игра начинается
+                if (balance < currentBet) {
+                    alert("Недостаточно средств на балансе!");
+                    return;
+                }
+
+                balance -= currentBet;
+                updateBalanceUI();
+
+                gameActive = true;
+                revealedStars = 0;
+                currentMultiplier = 1.00;
+
+                panelLabel.textContent = "Текущий коэфф:";
+                maxWinEl.textContent = "x" + currentMultiplier.toFixed(2);
+
+                playBtn.textContent = "Забрать " + (currentBet * currentMultiplier).toFixed(2) + " ₽";
+                playBtn.classList.add('collect-btn-active');
+
+                trapsSelector.style.opacity = '0.3';
+                betWrapper.style.opacity = '0.3';
+                betWrapper.style.pointerEvents = 'none';
+
+                renderBoard();
+            } else {
+                // Забрать выигрыш
+                collectWinnings();
             }
-
-            balance -= currentBet;
-            updateBalanceUI();
-
-            gameActive = true;
-            revealedStars = 0;
-            currentMultiplier = 1.00;
-            playBtn.disabled = true;
-            winDisplay.style.display = 'none';
-
-            renderBoard();
         }
 
         function renderBoard() {
@@ -524,9 +616,9 @@
                     revealedStars++;
                     currentMultiplier = 1.00 + (revealedStars * 0.38);
                     
-                    winDisplay.style.display = 'flex';
-                    displayCoeff.textContent = 'x' + currentMultiplier.toFixed(2);
-                    displayWin.textContent = (currentBet * currentMultiplier).toFixed(2) + ' ₽';
+                    // Обновляем панель коэффициентом и выигрышем в реальном времени
+                    maxWinEl.textContent = "x" + currentMultiplier.toFixed(2);
+                    playBtn.textContent = "Забрать " + (currentBet * currentMultiplier).toFixed(2) + " ₽";
                 });
                 
                 board.appendChild(cell);
@@ -541,12 +633,23 @@
             balance += wonAmount;
             updateBalanceUI();
 
-            alert(`Вы забрали выигрыш: ${wonAmount.toFixed(2)} ₽!`);
+            // Показываем модальное окно с конфетти
+            showWinModal(wonAmount.toFixed(2) + ' ₽');
             
             gameActive = false;
-            winDisplay.style.display = 'none';
-            playBtn.disabled = false;
+            resetUI();
             renderBoard();
+        }
+
+        function resetUI() {
+            playBtn.textContent = "Играть";
+            playBtn.classList.remove('collect-btn-active');
+            panelLabel.textContent = "Макс. выигрыш:";
+            recalculateMaxWin();
+            
+            trapsSelector.style.opacity = '1';
+            betWrapper.style.opacity = '1';
+            betWrapper.style.pointerEvents = 'all';
         }
 
         function get3DStarSvg() {
@@ -593,6 +696,45 @@
                 </svg>
             </div>
             `;
+        }
+
+        function showWinModal(amountText) {
+            document.getElementById('modal-win-amount').textContent = amountText;
+            document.getElementById('win-modal').classList.add('modal-active');
+            triggerConfetti();
+        }
+
+        function closeModal() {
+            document.getElementById('win-modal').classList.remove('modal-active');
+        }
+
+        function triggerConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = '';
+            const colors = ['#10b981', '#38bdf8', '#fbbf24', '#ff7700', '#0077ff'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                
+                // размеры
+                const size = Math.random() * 8 + 4;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                
+                container.appendChild(confetti);
+                
+                confetti.style.animation = `confetti-fall 3s cubic-bezier(0.1, 0.8, 0.3, 1) forwards`;
+                confetti.style.animationDelay = Math.random() * 2.5 + 's';
+            }
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
         }
     </script>
 </body>
