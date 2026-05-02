@@ -180,7 +180,7 @@
             transform: translate(-50%, -50%) scale(0.6);
             opacity: 0;
             /* Плавное появление без подпрыгивания */
-            animation: appearStar 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation: appearStar 0.35s ease-out forwards;
             filter: drop-shadow(0px 8px 12px rgba(255, 120, 0, 0.5));
         }
 
@@ -304,6 +304,57 @@
             margin-right: 4px;
         }
 
+        /* Дополнительный блок: Выигрыш и коэффициент */
+        .win-display {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            background: #142036;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            margin-bottom: 4px;
+        }
+
+        .win-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .win-title {
+            color: #8b9bb4;
+            font-size: 12px;
+        }
+
+        .win-multiplier {
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .win-amount {
+            color: #fbbf24;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .collect-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .collect-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+        }
+
         .play-btn {
             width: 100%;
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -323,13 +374,21 @@
             box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
             transform: translateY(-1px);
         }
+
+        .play-btn:disabled {
+            background: #202c44;
+            color: #596a8a;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
         <button class="top-btn">🎵</button>
-        <div class="balance-box">10 539,61 Br</div>
+        <div class="balance-box" id="balance-amount">10 539,61 Br</div>
         <button class="top-btn">❓ Как играть</button>
     </div>
 
@@ -337,10 +396,19 @@
         <div class="game-board" id="board">
             </div>
 
+        <div class="win-display" id="win-display">
+            <div class="win-info">
+                <span class="win-title">Текущий выигрыш:</span>
+                <span class="win-multiplier" id="display-coeff">x1.00</span>
+                <span class="win-amount" id="display-win">0.00 Br</span>
+            </div>
+            <button class="collect-btn" onclick="collectWinnings()">Забрать</button>
+        </div>
+
         <div class="controls">
             <div class="control-row">
                 <div class="max-win-box">
-                    ⭐ Макс. выигрыш: <span>0 Br</span>
+                    ⭐ Макс. выигрыш: <span id="max-win">0.00 Br</span>
                 </div>
                 <div class="traps-selector">
                     <button class="traps-btn" onclick="changeTraps(-1)">‹</button>
@@ -351,14 +419,14 @@
 
             <div class="control-row">
                 <div class="bet-input-wrapper">
-                    <button class="bet-btn" onclick="adjustBet(-10)">-</button>
-                    <input type="text" class="bet-input" id="bet-amount" value="0.00" readonly>
+                    <button class="bet-btn" onclick="adjustBet(-1)">-</button>
+                    <input type="text" class="bet-input" id="bet-amount" value="0.30" readonly>
                     <span class="bet-currency">Br</span>
-                    <button class="bet-btn" onclick="adjustBet(10)">+</button>
+                    <button class="bet-btn" onclick="adjustBet(1)">+</button>
                 </div>
             </div>
 
-            <button class="play-btn" onclick="startGame()">Играть</button>
+            <button class="play-btn" id="play-button" onclick="startGame()">Играть</button>
         </div>
     </div>
 
@@ -366,25 +434,119 @@
         const board = document.getElementById('board');
         const trapsCountEl = document.getElementById('traps-count');
         const betAmountEl = document.getElementById('bet-amount');
+        const balanceEl = document.getElementById('balance-amount');
+        const playBtn = document.getElementById('play-button');
+        const winDisplay = document.getElementById('win-display');
+        const displayCoeff = document.getElementById('display-coeff');
+        const displayWin = document.getElementById('display-win');
+        const maxWinEl = document.getElementById('max-win');
         
         let traps = 3;
-        let currentBet = 0.00;
+        let currentBet = 0.30;
+        let balance = 10539.61;
+        
+        let gameActive = false;
+        let revealedStars = 0;
+        let baseMultiplier = 1.00;
+        let currentMultiplier = 1.00;
+        
+        // Обновление UI баланса
+        function updateBalanceUI() {
+            balanceEl.textContent = balance.toLocaleString('ru-RU', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + ' Br';
+        }
+        updateBalanceUI();
 
         function changeTraps(val) {
+            if (gameActive) return;
             traps = Math.max(1, Math.min(24, traps + val));
             trapsCountEl.textContent = traps;
+            recalculateMaxWin();
         }
 
         function adjustBet(val) {
-            currentBet = Math.max(0.00, currentBet + val);
+            if (gameActive) return;
+            currentBet = Math.max(0.10, currentBet + val);
             betAmountEl.value = currentBet.toFixed(2);
+            recalculateMaxWin();
         }
+
+        function recalculateMaxWin() {
+            // Упрощенный расчет макс. выигрыша
+            let maxPotential = currentBet * Math.pow(1.2, (25 - traps));
+            maxWinEl.textContent = maxPotential.toFixed(2) + ' Br';
+        }
+        recalculateMaxWin();
 
         function startGame() {
-            alert("Игра началась!");
+            if (balance < currentBet) {
+                alert("Недостаточно средств на балансе!");
+                return;
+            }
+
+            // Списываем ставку
+            balance -= currentBet;
+            updateBalanceUI();
+
+            gameActive = true;
+            revealedStars = 0;
+            currentMultiplier = 1.00;
+            playBtn.disabled = true;
+            winDisplay.style.display = 'none'; // до первой открытой звезды
+
+            // Очищаем и пересоздаем ячейки
+            renderBoard();
         }
 
-        // SVG шаблон для идеальной 3D стеклянной звезды с правильной геометрией
+        function renderBoard() {
+            board.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                
+                cell.addEventListener('click', function() {
+                    if (!gameActive) return;
+                    if (cell.classList.contains('revealed')) return;
+                    
+                    // Открываем ячейку
+                    cell.classList.add('revealed');
+                    cell.innerHTML = get3DStarSvg();
+                    
+                    revealedStars++;
+                    
+                    // Увеличиваем коэффициент
+                    currentMultiplier = 1.00 + (revealedStars * 0.38);
+                    
+                    // Показываем блок с выигрышем
+                    winDisplay.style.display = 'flex';
+                    displayCoeff.textContent = 'x' + currentMultiplier.toFixed(2);
+                    displayWin.textContent = (currentBet * currentMultiplier).toFixed(2) + ' Br';
+                });
+                
+                board.appendChild(cell);
+            }
+        }
+        renderBoard(); // Создаем ячейки для начала
+
+        function collectWinnings() {
+            if (!gameActive) return;
+            
+            const wonAmount = currentBet * currentMultiplier;
+            balance += wonAmount;
+            updateBalanceUI();
+
+            alert(`Вы забрали выигрыш: ${wonAmount.toFixed(2)} Br!`);
+            
+            // Сбрасываем игру
+            gameActive = false;
+            winDisplay.style.display = 'none';
+            playBtn.disabled = false;
+            renderBoard(); // сбрасываем доску
+        }
+
+        // SVG шаблон для 3D стеклянной звезды с правильной геометрией
         function get3DStarSvg() {
             return `
             <div class="star-container">
@@ -414,39 +576,21 @@
                         </filter>
                     </defs>
 
-                    <path d="M50 5 L63 36 L95 36 L70 55 L80 85 L50 68 L20 85 L30 55 L5 36 L37 36 Z" 
+                    <path d="M 50 14 L 61 38 L 86 38 L 66 54 L 74 78 L 50 63 L 26 78 L 34 54 L 14 38 L 39 38 Z" 
                           fill="url(#starBody)" 
                           stroke="#ffaa00" 
                           stroke-width="1.5"
                           filter="url(#shadow3d)" />
 
-                    <path d="M50 5 L63 36 L95 36 L70 55 L80 85 L50 68 L20 85 L30 55 L5 36 L37 36 Z" 
+                    <path d="M 50 14 L 61 38 L 86 38 L 66 54 L 74 78 L 50 63 L 26 78 L 34 54 L 14 38 L 39 38 Z" 
                           fill="url(#glassShine)" />
 
-                    <path d="M50 18 L58 36 L78 37 L63 48 L68 68 L50 56 L32 68 L37 48 L22 37 L42 36 Z" 
+                    <path d="M 50 22 L 57 37 L 72 37 L 60 46 L 65 61 L 50 51 L 35 61 L 40 46 L 28 37 L 43 37 Z" 
                           fill="url(#innerGlow)" 
                           opacity="0.9" />
                 </svg>
             </div>
             `;
-        }
-
-        // Генерация 25 клеток
-        for (let i = 0; i < 25; i++) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            
-            cell.addEventListener('click', function() {
-                if (cell.classList.contains('revealed')) return;
-                
-                // Исчезновение ячейки (становится полностью прозрачной)
-                cell.classList.add('revealed');
-                
-                // Добавление 3D звезды
-                cell.innerHTML = get3DStarSvg();
-            });
-            
-            board.appendChild(cell);
         }
     </script>
 </body>
