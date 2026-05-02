@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines - 3D Стеклянные Звезды</title>
+    <title>Mines - 3D Игровая</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,9 +11,8 @@
             padding: 0;
             user-select: none;
         }
-
         body {
-            background-color: #050812;
+            background-color: #050813;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             color: #fff;
             min-height: 100vh;
@@ -26,7 +25,6 @@
             overflow-x: hidden;
         }
 
-        /* Фоновые эффекты: трещины, камни и искры */
         .bg-decorations {
             position: fixed;
             top: 0;
@@ -37,94 +35,117 @@
             pointer-events: none;
         }
 
+        /* Искорки */
         .spark {
             position: absolute;
             width: 6px;
             height: 6px;
             background: #38bdf8;
             border-radius: 50%;
-            box-shadow: 0 0 8px #38bdf8, 0 0 12px rgba(56, 189, 248, 0.6);
-            animation: floatSpark 4s infinite ease-in-out;
+            box-shadow: 0 0 12px #38bdf8, 0 0 20px #bae6fd;
+            animation: floatSpark 5s infinite ease-in-out;
             opacity: 0;
         }
 
         @keyframes floatSpark {
-            0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0; }
-            20% { opacity: 0.8; }
+            0% { transform: translateY(0) translateX(0) scale(0.6); opacity: 0; }
+            20% { opacity: 0.9; }
             80% { opacity: 0.8; }
-            100% { transform: translateY(-300px) translateX(50px) scale(0.4); opacity: 0; }
+            100% { transform: translateY(-400px) translateX(80px) scale(0.3); opacity: 0; }
         }
 
+        /* Трещины */
         .crack {
             position: absolute;
-            background: rgba(56, 189, 248, 0.2);
-            box-shadow: 0 0 5px rgba(56, 189, 248, 0.3);
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.3), rgba(14, 165, 233, 0.6), rgba(56, 189, 248, 0.3));
+            box-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+            border-radius: 2px;
+            transform-origin: center;
         }
-
+        
         .crack-1 {
-            top: 30%;
-            left: 10%;
-            width: 200px;
-            height: 2px;
-            transform: rotate(-25deg);
+            top: 25%;
+            left: 8%;
+            width: 280px;
+            height: 4px;
+            transform: rotate(-30deg);
+            box-shadow: inset 0 1px 3px rgba(255,255,255,0.4);
         }
         .crack-2 {
-            top: 55%;
-            right: 15%;
-            width: 160px;
-            height: 3px;
-            transform: rotate(35deg);
+            top: 52%;
+            right: 8%;
+            width: 240px;
+            height: 5px;
+            transform: rotate(25deg);
         }
         .crack-3 {
-            bottom: 25%;
-            left: 25%;
-            width: 180px;
-            height: 2px;
-            transform: rotate(5deg);
+            bottom: 28%;
+            left: 15%;
+            width: 260px;
+            height: 4px;
+            transform: rotate(-10deg);
         }
 
-        /* Камни и алмазы на фоне */
-        .gem {
+        /* 3D Алмазы */
+        .gem-3d {
             position: absolute;
-            font-size: 24px;
-            filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
-            animation: pulseGem 2.5s infinite alternate;
+            width: 45px;
+            height: 45px;
+            filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.8));
+            animation: floatGem3d 3.5s infinite alternate ease-in-out;
         }
 
-        .gem-1 { top: 35%; left: 12%; transform: rotate(15deg); }
-        .gem-2 { top: 60%; right: 18%; transform: rotate(-20deg); }
-        .gem-3 { bottom: 28%; left: 28%; }
+        @keyframes floatGem3d {
+            0% { transform: translateY(0) rotate(0deg) scale(0.95); }
+            100% { transform: translateY(-12px) rotate(4deg) scale(1.05); }
+        }
 
-        /* Нижний ряд камней с алмазами */
+        .gem-1 { top: 32%; left: 15%; }
+        .gem-2 { top: 58%; right: 20%; }
+        .gem-3 { bottom: 35%; left: 22%; }
+
+        /* Нижняя панель */
         .bottom-stones {
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 80px;
-            background: linear-gradient(to top, #050812, transparent);
+            height: 90px;
+            background: linear-gradient(to top, #050813, transparent);
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 40px;
-            padding-bottom: 15px;
-            opacity: 0.8;
+            gap: 48px;
+            padding-bottom: 20px;
         }
-        .bottom-gem {
-            font-size: 32px;
+
+        .stone-container {
+            position: relative;
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(to bottom, #1e293b, #0f172a);
+            border-radius: 12px 12px 4px 4px;
+            box-shadow: inset 0 3px 8px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .stone-gem {
+            width: 28px;
+            height: 28px;
+            position: absolute;
+            top: -14px;
             filter: drop-shadow(0 0 10px #38bdf8);
-            animation: floatGems 3s ease-in-out infinite alternate;
+            animation: pulseBottomGem 2.5s infinite alternate;
         }
 
-        @keyframes floatGems {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-8px); }
+        @keyframes pulseBottomGem {
+            0% { transform: translateY(0) scale(1); filter: brightness(1); }
+            100% { transform: translateY(-4px) scale(1.15); filter: brightness(1.4); }
         }
 
-        @keyframes pulseGem {
-            0% { transform: scale(1) rotate(0deg); filter: brightness(1) drop-shadow(0 0 6px rgba(56, 189, 248, 0.5)); }
-            100% { transform: scale(1.12) rotate(4deg); filter: brightness(1.4) drop-shadow(0 0 14px rgba(56, 189, 248, 0.8)); }
-        }
-
+        /* Верхняя панель */
         .top-bar {
             width: 100%;
             max-width: 450px;
@@ -136,11 +157,11 @@
         }
 
         .top-btn {
-            background: #111a2e;
+            background: #0e172a;
             border: none;
-            border-radius: 10px;
-            padding: 10px 14px;
-            color: #8b9bb4;
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: #94a3b8;
             cursor: pointer;
             font-size: 14px;
             display: flex;
@@ -151,24 +172,25 @@
         }
 
         .top-btn:hover {
-            background: #192642;
+            background: #1e293b;
             color: #fff;
-            border-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .balance-box {
-            background: #111a2e;
-            padding: 10px 18px;
+            background: #0e172a;
+            padding: 10px 20px;
             border-radius: 24px;
             font-size: 15px;
             font-weight: bold;
-            color: #e2e8f0;
+            color: #f1f5f9;
             display: flex;
             align-items: center;
             gap: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(56, 189, 248, 0.1);
         }
 
+        /* Игровая область */
         .main-game-area {
             display: flex;
             flex-direction: column;
@@ -176,7 +198,7 @@
             justify-content: center;
             width: 100%;
             max-width: 450px;
-            margin-bottom: 60px;
+            margin-bottom: 70px;
         }
 
         .game-board {
@@ -186,30 +208,30 @@
             width: 100%;
             max-width: 400px;
             aspect-ratio: 1;
-            background: linear-gradient(145deg, rgba(22, 33, 54, 0.7) 0%, rgba(8, 13, 24, 0.85) 100%);
-            padding: 22px;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.7) 0%, rgba(2, 6, 23, 0.9) 100%);
+            padding: 24px;
             border-radius: 36px;
-            border: 1.5px solid rgba(56, 189, 248, 0.2);
+            border: 1.5px solid rgba(56, 189, 248, 0.25);
             box-shadow: 
                 0 20px 40px rgba(0, 0, 0, 0.8),
-                inset 0 3px 12px rgba(255, 255, 255, 0.05),
-                0 0 25px rgba(28, 122, 148, 0.18);
-            margin-bottom: 20px;
+                inset 0 4px 16px rgba(255, 255, 255, 0.05),
+                0 0 30px rgba(56, 189, 248, 0.15);
+            margin-bottom: 24px;
             position: relative;
         }
 
         .cell {
             aspect-ratio: 1;
-            background: linear-gradient(135deg, rgba(29, 137, 166, 0.75) 0%, rgba(13, 63, 77, 0.82) 100%);
-            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.8) 0%, rgba(3, 105, 161, 0.8) 100%);
+            border-radius: 16px;
             cursor: pointer;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.3s ease, box-shadow 0.35s ease, background 0.35s ease, border-color 0.35s ease;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background 0.25s ease;
             box-shadow: 
-                inset 0 5px 12px rgba(255, 255, 255, 0.3),
-                inset 0 -4px 10px rgba(0, 0, 0, 0.5),
-                0 4px 8px rgba(0, 0, 0, 0.4);
+                inset 0 4px 10px rgba(255, 255, 255, 0.3),
+                inset 0 -4px 8px rgba(0, 0, 0, 0.4),
+                0 4px 8px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -221,7 +243,7 @@
             width: 84%;
             height: 38%;
             background: linear-gradient(to bottom, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 100%);
-            border-radius: 12px 12px 6px 6px;
+            border-radius: 14px 14px 6px 6px;
             pointer-events: none;
         }
 
@@ -232,23 +254,23 @@
             right: 8%;
             width: 12%;
             height: 80%;
-            background: linear-gradient(to right, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(to right, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
             border-radius: 50%;
             pointer-events: none;
         }
 
         .cell:hover {
-            transform: translateY(-4px) scale(1.03);
-            background: linear-gradient(135deg, rgba(35, 163, 199, 0.9) 0%, rgba(15, 74, 91, 0.95) 100%);
+            transform: translateY(-4px) scale(1.04);
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.9) 0%, rgba(2, 132, 199, 0.9) 100%);
             box-shadow: 
-                inset 0 7px 16px rgba(255, 255, 255, 0.4),
-                inset 0 -4px 12px rgba(0, 0, 0, 0.4),
-                0 12px 22px rgba(28, 122, 148, 0.4),
-                0 0 10px rgba(255, 255, 255, 0.2);
+                inset 0 6px 16px rgba(255, 255, 255, 0.4),
+                inset 0 -4px 10px rgba(0, 0, 0, 0.3),
+                0 12px 24px rgba(56, 189, 248, 0.4),
+                0 0 12px rgba(255, 255, 255, 0.2);
         }
 
         .cell:active {
-            transform: translateY(2px) scale(0.97);
+            transform: translateY(2px) scale(0.96);
         }
 
         .cell.revealed {
@@ -265,21 +287,21 @@
         }
 
         .star-container {
-            width: 90%;
-            height: 90%;
+            width: 92%;
+            height: 92%;
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0.6);
+            transform: translate(-50%, -50%) scale(0.5);
             opacity: 0;
-            animation: appearStar 0.35s ease-out forwards;
-            filter: drop-shadow(0px 8px 12px rgba(255, 120, 0, 0.5));
+            animation: appearStar 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            filter: drop-shadow(0 0 16px rgba(255, 120, 0, 0.7));
         }
 
         @keyframes appearStar {
             0% { 
                 opacity: 0;
-                transform: translate(-50%, -50%) scale(0.6); 
+                transform: translate(-50%, -50%) scale(0.5); 
             }
             100% { 
                 opacity: 1;
@@ -287,24 +309,25 @@
             }
         }
 
+        /* Панель управления */
         .controls {
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            background: #0d1524;
+            background: rgba(15, 23, 42, 0.85);
             padding: 18px;
             border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.02);
         }
 
         .panel-3d {
-            background: linear-gradient(145deg, #10192d 0%, #070e1b 100%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: linear-gradient(145deg, #0e172a 0%, #030712 100%);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 16px;
             padding: 14px 18px;
-            box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.03), 0 4px 12px rgba(0, 0, 0, 0.4);
+            box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.02), 0 4px 12px rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -314,7 +337,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #8b9bb4;
+            color: #64748b;
             font-size: 13px;
         }
 
@@ -333,16 +356,16 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            background: #162138;
+            background: #1e293b;
             border-radius: 10px;
             padding: 2px 8px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .traps-btn {
             background: transparent;
             border: none;
-            color: #fff;
+            color: #f8fafc;
             font-size: 18px;
             cursor: pointer;
             padding: 4px 8px;
@@ -370,18 +393,18 @@
         .bet-input-wrapper {
             display: flex;
             align-items: center;
-            background: #162138;
+            background: #1e293b;
             border-radius: 12px;
             padding: 6px 14px;
             width: 100%;
             justify-content: space-between;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .bet-btn {
             background: transparent;
             border: none;
-            color: #fff;
+            color: #f8fafc;
             font-size: 18px;
             cursor: pointer;
             padding: 2px 8px;
@@ -395,7 +418,7 @@
         .bet-input {
             background: transparent;
             border: none;
-            color: #fff;
+            color: #f8fafc;
             font-size: 16px;
             width: 90px;
             text-align: center;
@@ -404,7 +427,7 @@
         }
 
         .bet-currency {
-            color: #8b9bb4;
+            color: #64748b;
             font-size: 14px;
             margin-right: 4px;
             font-weight: bold;
@@ -412,7 +435,7 @@
 
         .play-btn {
             width: 100%;
-            background: #0077ff;
+            background: #0284c7;
             color: #fff;
             border: none;
             padding: 14px;
@@ -420,19 +443,19 @@
             font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
         }
 
         .play-btn:hover {
-            background: #0066e6;
-            box-shadow: 0 6px 16px rgba(0, 119, 255, 0.4);
+            background: #0369a1;
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
             transform: translateY(-1px);
         }
 
         .play-btn:disabled {
-            background: #202c44;
-            color: #596a8a;
+            background: #1e293b;
+            color: #475569;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
@@ -440,7 +463,7 @@
 
         .collect-btn-active {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4) !important;
         }
         
         .collect-btn-active:hover {
@@ -454,7 +477,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(8, 13, 25, 0.85);
+            background: rgba(2, 6, 23, 0.88);
             backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
@@ -465,15 +488,15 @@
         }
 
         .modal-card {
-            background: linear-gradient(145deg, #10192d 0%, #070e1b 100%);
+            background: linear-gradient(145deg, #0f172a 0%, #020617 100%);
             border: 2px solid rgba(16, 185, 129, 0.3);
-            border-radius: 32px;
+            border-radius: 36px;
             padding: 40px;
             width: 90%;
             max-width: 360px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(16, 185, 129, 0.2);
-            transform: scale(0.8);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.9), 0 0 48px rgba(16, 185, 129, 0.25);
+            transform: scale(0.85);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
@@ -487,16 +510,16 @@
         }
 
         .modal-icon-wrapper {
-            width: 80px;
-            height: 80px;
+            width: 84px;
+            height: 84px;
             background: rgba(16, 185, 129, 0.15);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            margin: 0 auto 24px;
+            border: 1.5px solid rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.4);
             animation: pulseIcon 2s infinite alternate;
         }
 
@@ -506,45 +529,46 @@
         }
 
         .sparkling-star {
-            font-size: 38px;
+            font-size: 42px;
             color: #fbbf24;
-            text-shadow: 0 0 12px #fbbf24, 0 0 20px #ff7700;
+            text-shadow: 0 0 16px #fbbf24, 0 0 24px #ea580c;
             animation: pulseStar 1.5s infinite alternate;
         }
 
         @keyframes pulseStar {
-            0% { transform: scale(0.9); opacity: 0.7; }
+            0% { transform: scale(0.95); opacity: 0.8; }
             100% { transform: scale(1.15); opacity: 1; }
         }
 
         .modal-title {
-            color: #10b981;
-            font-size: 18px;
+            color: #34d399;
+            font-size: 20px;
             text-transform: uppercase;
-            letter-spacing: 1.8px;
+            letter-spacing: 2px;
             font-weight: 800;
             margin-bottom: 12px;
-            text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
         }
 
         .modal-amount {
-            font-size: 38px;
+            font-size: 42px;
             font-weight: 800;
             color: #ffffff;
-            margin-bottom: 28px;
-            text-shadow: 0 2px 10px rgba(255,255,255,0.3);
+            margin-bottom: 32px;
+            text-shadow: 0 4px 16px rgba(255,255,255,0.35);
         }
 
         .modal-btn {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #fff;
             border: none;
-            padding: 16px 28px;
-            border-radius: 16px;
+            padding: 18px 28px;
+            border-radius: 18px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
             transition: all 0.2s ease;
         }
 
@@ -555,8 +579,8 @@
 
         .confetti {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             opacity: 0;
             z-index: 101;
         }
@@ -568,7 +592,7 @@
             }
             100% {
                 opacity: 0;
-                transform: translateY(500px) rotate(720deg);
+                transform: translateY(550px) rotate(720deg);
             }
         }
     </style>
@@ -580,9 +604,56 @@
         <div class="crack crack-2"></div>
         <div class="crack crack-3"></div>
 
-        <div class="gem gem-1">💎</div>
-        <div class="gem gem-2">💠</div>
-        <div class="gem gem-3">🔷</div>
+        <svg class="gem-3d gem-1" viewBox="0 0 100 100">
+            <defs>
+                <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="35%" stop-color="#38bdf8"/>
+                    <stop offset="85%" stop-color="#0284c7"/>
+                    <stop offset="100%" stop-color="#0c4a6e"/>
+                </linearGradient>
+                <linearGradient id="sh1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+                </linearGradient>
+            </defs>
+            <polygon points="50,5 90,35 65,85 35,85 10,35" fill="url(#g1)" stroke="#7dd3fc" stroke-width="1.5"/>
+            <polygon points="50,5 50,85 65,85 90,35" fill="url(#sh1)"/>
+        </svg>
+
+        <svg class="gem-3d gem-2" viewBox="0 0 100 100">
+            <defs>
+                <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="35%" stop-color="#a855f7"/>
+                    <stop offset="85%" stop-color="#6b21a8"/>
+                    <stop offset="100%" stop-color="#3b0764"/>
+                </linearGradient>
+                <linearGradient id="sh2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+                </linearGradient>
+            </defs>
+            <polygon points="50,5 90,35 65,85 35,85 10,35" fill="url(#g2)" stroke="#c084fc" stroke-width="1.5"/>
+            <polygon points="50,5 50,85 65,85 90,35" fill="url(#sh2)"/>
+        </svg>
+
+        <svg class="gem-3d gem-3" viewBox="0 0 100 100">
+            <defs>
+                <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="35%" stop-color="#34d399"/>
+                    <stop offset="85%" stop-color="#047857"/>
+                    <stop offset="100%" stop-color="#064e3b"/>
+                </linearGradient>
+                <linearGradient id="sh3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+                </linearGradient>
+            </defs>
+            <polygon points="50,5 90,35 65,85 35,85 10,35" fill="url(#g3)" stroke="#6ee7b7" stroke-width="1.5"/>
+            <polygon points="50,5 50,85 65,85 90,35" fill="url(#sh3)"/>
+        </svg>
     </div>
 
     <div class="top-bar">
@@ -592,14 +663,13 @@
     </div>
 
     <div class="main-game-area">
-        <div class="game-board" id="board">
-            </div>
+        <div class="game-board" id="board"></div>
 
         <div class="controls">
             <div class="panel-3d">
                 <div class="max-win-box">
                     <svg class="star-icon-small" viewBox="0 0 100 100">
-                        <polygon points="50,5 63,35 95,38 70,59 78,92 50,74 22,92 30,59 5,38 37,35" fill="#ffaa00" stroke="#ffcc00" stroke-width="2"/>
+                        <polygon points="50,5 63,35 95,38 70,59 78,92 50,74 22,92 30,59 5,38 37,35" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
                     </svg>
                     <span id="panel-label">Макс. выигрыш:</span> <span id="max-win">0.00 ₽</span>
                 </div>
@@ -624,11 +694,31 @@
     </div>
 
     <div class="bottom-stones">
-        <div class="bottom-gem">💎</div>
-        <div class="bottom-gem">💠</div>
-        <div class="bottom-gem">🔷</div>
-        <div class="bottom-gem">💎</div>
-        <div class="bottom-gem">💠</div>
+        <div class="stone-container">
+            <svg class="stone-gem" viewBox="0 0 100 100">
+                <polygon points="50,10 85,40 65,90 35,90 15,40" fill="#38bdf8" stroke="#7dd3fc" stroke-width="1.5" />
+            </svg>
+        </div>
+        <div class="stone-container">
+            <svg class="stone-gem" viewBox="0 0 100 100">
+                <polygon points="50,10 85,40 65,90 35,90 15,40" fill="#a855f7" stroke="#c084fc" stroke-width="1.5" />
+            </svg>
+        </div>
+        <div class="stone-container">
+            <svg class="stone-gem" viewBox="0 0 100 100">
+                <polygon points="50,10 85,40 65,90 35,90 15,40" fill="#34d399" stroke="#6ee7b7" stroke-width="1.5" />
+            </svg>
+        </div>
+        <div class="stone-container">
+            <svg class="stone-gem" viewBox="0 0 100 100">
+                <polygon points="50,10 85,40 65,90 35,90 15,40" fill="#fbbf24" stroke="#fcd34d" stroke-width="1.5" />
+            </svg>
+        </div>
+        <div class="stone-container">
+            <svg class="stone-gem" viewBox="0 0 100 100">
+                <polygon points="50,10 85,40 65,90 35,90 15,40" fill="#38bdf8" stroke="#7dd3fc" stroke-width="1.5" />
+            </svg>
+        </div>
     </div>
 
     <div class="modal-overlay" id="win-modal">
@@ -666,12 +756,12 @@
         
         // Генерация искорок
         function createSparks() {
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 24; i++) {
                 const spark = document.createElement('div');
                 spark.classList.add('spark');
                 spark.style.left = Math.random() * 100 + '%';
-                spark.style.top = (30 + Math.random() * 50) + '%';
-                spark.style.animationDelay = Math.random() * 4 + 's';
+                spark.style.top = (25 + Math.random() * 60) + '%';
+                spark.style.animationDelay = Math.random() * 5 + 's';
                 bgDecorations.appendChild(spark);
             }
         }
@@ -795,30 +885,30 @@
                         <linearGradient id="starBody" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#fffa80" />
                             <stop offset="30%" stop-color="#ffcc00" />
-                            <stop offset="75%" stop-color="#ff7700" />
-                            <stop offset="100%" stop-color="#b32400" />
+                            <stop offset="75%" stop-color="#ea580c" />
+                            <stop offset="100%" stop-color="#9a3412" />
                         </linearGradient>
 
                         <radialGradient id="glassShine" cx="35%" cy="30%" r="55%">
                             <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
                             <stop offset="50%" stop-color="#ffcc00" stop-opacity="0.4" />
-                            <stop offset="100%" stop-color="#ff6600" stop-opacity="0" />
+                            <stop offset="100%" stop-color="#c2410c" stop-opacity="0" />
                         </radialGradient>
 
                         <radialGradient id="innerGlow" cx="50%" cy="50%" r="50%">
                             <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
                             <stop offset="50%" stop-color="#ffdd66" stop-opacity="0.5" />
-                            <stop offset="100%" stop-color="#ffaa00" stop-opacity="0" />
+                            <stop offset="100%" stop-color="#d97706" stop-opacity="0" />
                         </radialGradient>
 
                         <filter id="shadow3d" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.6" />
+                            <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.7" />
                         </filter>
                     </defs>
 
                     <path d="M 50 14 L 61 38 L 86 38 L 66 54 L 74 78 L 50 63 L 26 78 L 34 54 L 14 38 L 39 38 Z" 
                           fill="url(#starBody)" 
-                          stroke="#ffaa00" 
+                          stroke="#d97706" 
                           stroke-width="1.5"
                           filter="url(#shadow3d)" />
 
@@ -846,29 +936,29 @@
         function triggerConfetti() {
             const container = document.getElementById('confetti-container');
             container.innerHTML = '';
-            const colors = ['#10b981', '#38bdf8', '#fbbf24', '#ff7700', '#0077ff'];
+            const colors = ['#10b981', '#38bdf8', '#fbbf24', '#f97316', '#0284c7'];
             
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 120; i++) {
                 const confetti = document.createElement('div');
                 confetti.classList.add('confetti');
                 confetti.style.left = Math.random() * 100 + '%';
                 confetti.style.top = '-20px';
                 confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '4px';
                 
-                const size = Math.random() * 8 + 4;
+                const size = Math.random() * 8 + 6;
                 confetti.style.width = size + 'px';
                 confetti.style.height = size + 'px';
                 
                 container.appendChild(confetti);
                 
-                confetti.style.animation = `confetti-fall 3s cubic-bezier(0.1, 0.8, 0.3, 1) forwards`;
-                confetti.style.animationDelay = Math.random() * 2.5 + 's';
+                confetti.style.animation = `confetti-fall 3.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards`;
+                confetti.style.animationDelay = Math.random() * 3 + 's';
             }
             
             setTimeout(() => {
                 container.innerHTML = '';
-            }, 5000);
+            }, 6000);
         }
     </script>
 </body>
