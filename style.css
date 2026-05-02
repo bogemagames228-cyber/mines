@@ -104,3 +104,6 @@ body {
         transform: translate(-50%, -50%) scale(1);
     }
 }
+.cell:hover {
+    box-shadow: 0 0 20px rgba(0,255,255,0.5);
+}
