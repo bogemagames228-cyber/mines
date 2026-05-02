@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines 1 Win - 3D Симулятор</title>
+    <title>Mines 3D 1win</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #2e3d52;
+            background-color: #1e293b;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: white;
             min-height: 100vh;
@@ -35,7 +35,7 @@
             height: 100%;
             z-index: 0;
             pointer-events: none;
-            opacity: 0.15;
+            opacity: 0.12;
         }
 
         .bg-cross {
@@ -46,6 +46,37 @@
             text-shadow: 0 0 8px rgba(4, 124, 215, 0.8);
         }
 
+        /* 3D-Панель Кошелька */
+        .wallet-panel {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: linear-gradient(145deg, #182433, #0c141d);
+            border: 2px solid rgba(4, 124, 215, 0.4);
+            border-radius: 16px;
+            padding: 12px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 2px 6px rgba(255, 255, 255, 0.08);
+            z-index: 10;
+        }
+
+        .wallet-icon {
+            width: 26px;
+            height: 26px;
+            fill: #047cd7;
+            filter: drop-shadow(0 0 5px rgba(4, 124, 215, 0.8));
+        }
+
+        .wallet-balance {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+
         .container {
             max-width: 500px;
             width: 100%;
@@ -54,18 +85,18 @@
         }
 
         header h1 {
-            font-size: 28px;
+            font-size: 26px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #ffffff;
             text-shadow: 0 0 10px #ffffff, 0 0 20px #67e8f9, 0 0 30px #047cd7;
         }
 
         .subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: #94a3b8;
-            margin-bottom: 35px;
+            margin-bottom: 28px;
             letter-spacing: 0.5px;
         }
 
@@ -73,9 +104,9 @@
         .game-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin: 0 auto 30px;
-            max-width: 400px;
+            gap: 10px;
+            margin: 0 auto 18px;
+            max-width: 390px;
             width: 100%;
         }
 
@@ -121,6 +152,162 @@
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
 
+        /* 3D-панели под полем */
+        .panel-3d {
+            background: linear-gradient(145deg, #182433, #0c141d);
+            border: 2px solid rgba(4, 124, 215, 0.4);
+            border-radius: 18px;
+            padding: 14px 20px;
+            margin: 0 auto 12px;
+            max-width: 390px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-icon-star {
+            width: 24px;
+            height: 24px;
+            filter: drop-shadow(0 0 6px #ffb300);
+            animation: pulseStar 1.5s infinite alternate;
+        }
+
+        @keyframes pulseStar {
+            0% { transform: scale(0.9); }
+            100% { transform: scale(1.05); }
+        }
+
+        .panel-text {
+            font-size: 13px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-value-green {
+            color: #22c55e;
+            font-weight: 800;
+            font-size: 16px;
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+
+        .panel-value {
+            font-size: 15px;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        /* Панель управления ставками */
+        .controls-panel {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+            padding: 16px 20px;
+        }
+
+        .bet-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bet-input-wrapper {
+            position: relative;
+            width: 55%;
+        }
+
+        .bet-input {
+            width: 100%;
+            background-color: #0b1118;
+            border: 1.5px solid #047cd7;
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+
+        .bet-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.5), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .currency-label {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-weight: bold;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(2, 132, 199, 0.5);
+            transition: all 0.2s;
+            width: 40%;
+        }
+
+        .play-btn:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 10px 32px rgba(2, 132, 199, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .play-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Панель Забрать (Multiplier) */
+        .multiplier-panel {
+            display: none; /* Пока игра не началась - скрыто */
+            background: linear-gradient(145deg, #0f2744, #0b1522);
+            border: 2px solid #22c55e;
+            box-shadow: 0 10px 28px rgba(34, 197, 94, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.05);
+        }
+
+        .collect-btn {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.5);
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .collect-btn:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 10px 28px rgba(34, 197, 94, 0.7);
+            transform: translateY(-1px);
+        }
+
         /* Оверлей и модальное окно */
         .overlay {
             position: fixed;
@@ -161,13 +348,23 @@
             transform: translateY(0) scale(1);
         }
 
+        /* Конфетти для победной таблички */
+        .confetti-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
         .modal-title {
             color: #60a5fa;
-            font-size: 40px;
+            font-size: 38px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             text-shadow: 0 0 18px rgba(96, 165, 250, 0.7);
         }
 
@@ -196,7 +393,7 @@
             text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
         }
 
-        .collect-btn {
+        .collect-win-btn {
             background: linear-gradient(135deg, #047cd7, #025096);
             color: white;
             border: none;
@@ -212,14 +409,10 @@
             width: 100%;
         }
 
-        .collect-btn:hover {
+        .collect-win-btn:hover {
             filter: brightness(1.15);
             box-shadow: 0 12px 36px rgba(4, 124, 215, 0.7);
             transform: translateY(-2px);
-        }
-
-        .collect-btn:active {
-            transform: translateY(1px);
         }
     </style>
 </head>
@@ -227,23 +420,59 @@
 
     <div class="bg-crosses" id="crossesContainer"></div>
 
+    <div class="wallet-panel">
+        <svg class="wallet-icon" viewBox="0 0 24 24">
+            <path d="M21,18V6H4V18H21M21,4A2,2 0 0,1 23,6V18A2,2 0 0,1 21,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H21M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12Z"/>
+        </svg>
+        <span class="wallet-balance" id="walletBalance">10 539.61 P</span>
+    </div>
+
     <div class="container">
         <header>
-            <h1>ИСПЫТАЙ СВОЮ УДАЧУ В MINES 1 WIN</h1>
+            <h1>MINES 3D 1WIN</h1>
         </header>
-        <div class="subtitle">Нажми любую клетку, чтобы испытать удачу.</div>
+        <div class="subtitle">Открывайте звезды и забирайте выигрыш!</div>
 
         <div class="game-board" id="board"></div>
+
+        <div class="panel-3d">
+            <div class="panel-item">
+                <svg class="panel-icon-star" viewBox="0 0 100 100">
+                    <polygon points="50,5 63,35 95,38 70,61 78,93 50,75 22,93 30,61 5,38 37,35" fill="#ffb300"/>
+                </svg>
+                <span class="panel-text">Макс. выигрыш:</span>
+                <span class="panel-value-green" id="maxWinText">0.00 P</span>
+            </div>
+            <div class="panel-item">
+                <span class="panel-text">Ловушки:</span>
+                <span class="panel-value">3</span>
+            </div>
+        </div>
+
+        <div class="panel-3d controls-panel">
+            <div class="bet-group">
+                <div class="bet-input-wrapper">
+                    <input type="number" class="bet-input" id="betAmount" value="100" min="10">
+                    <span class="currency-label">P</span>
+                </div>
+                <button class="play-btn" id="playBtn" onclick="startGame()">ИГРАТЬ</button>
+            </div>
+        </div>
+
+        <div class="panel-3d multiplier-panel" id="multiplierPanel">
+            <button class="collect-btn" onclick="collectWin()">ЗАБРАТЬ х<span id="multiplierValue">1.0</span> (0 P)</button>
+        </div>
     </div>
 
     <div class="overlay" id="winModal">
+        <div class="confetti-container" id="confettiContainer"></div>
         <div class="modal">
-            <div class="modal-title">YOU'VE WON!</div>
+            <div class="modal-title">YOU WON!</div>
             <div class="modal-subtitle">Ваш выигрыш</div>
             <div class="amount-box">
-                <div class="amount-text">500 000 P</div>
+                <div class="amount-text" id="winAmountText">0.00 P</div>
             </div>
-            <button class="collect-btn" onclick="closeModal()">Забрать выигрыш</button>
+            <button class="collect-win-btn" onclick="closeModal()">Забрать</button>
         </div>
     </div>
 
@@ -251,10 +480,20 @@
         const board = document.getElementById('board');
         const winModal = document.getElementById('winModal');
         const crossesContainer = document.getElementById('crossesContainer');
-        const totalCells = 25;
-        let clicks = 0;
-        const requiredClicks = 6; 
-
+        const walletBalance = document.getElementById('walletBalance');
+        const playBtn = document.getElementById('playBtn');
+        const multiplierPanel = document.getElementById('multiplierPanel');
+        const maxWinText = document.getElementById('maxWinText');
+        const betAmountInput = document.getElementById('betAmount');
+        const multiplierValue = document.getElementById('multiplierValue');
+        
+        let balance = 10539.61;
+        let betAmount = 100;
+        let totalCells = 25;
+        let gameActive = false;
+        let openedStars = 0;
+        let currentMultiplier = 1.0;
+        
         // Инициализация звуков через Web Audio API
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
@@ -292,7 +531,7 @@
             
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(350, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(700, audioCtx.currentTime + 0.3);
+            osc.frequency.linearRampToValueAtTime(700, audioCtx.currentTime + 0.35);
             
             gainNode.gain.setValueAtTime(0.25, audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
@@ -301,9 +540,15 @@
             osc.stop(audioCtx.currentTime + 0.35);
         }
 
-        // Генерируем фоновые крестики
+        // Обновление баланса
+        function updateWallet() {
+            walletBalance.innerText = `${balance.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} P`;
+        }
+
+        // Генерация фоновых крестиков
         function generateBackgroundCrosses() {
-            const count = 18;
+            crossesContainer.innerHTML = '';
+            const count = 16;
             for (let i = 0; i < count; i++) {
                 const cross = document.createElement('div');
                 cross.classList.add('bg-cross');
@@ -322,17 +567,19 @@
                 cell.classList.add('cell');
                 
                 cell.addEventListener('click', function() {
-                    initAudio();
+                    if (!gameActive) return; // Игра должна быть запущена
                     if (cell.classList.contains('revealed')) return;
                     
+                    initAudio();
                     playClickSound();
                     cell.classList.add('revealed');
+                    
+                    openedStars++;
+                    currentMultiplier = parseFloat((openedStars * 0.3 + 1.0).toFixed(2));
                     
                     // Создаем 3D-Звезду
                     const starContainer = document.createElement('div');
                     starContainer.classList.add('star-container');
-                    
-                    // SVG 3D-Звездочка
                     starContainer.innerHTML = `
                         <svg viewBox="0 0 100 100" width="100%" height="100%">
                             <defs>
@@ -352,28 +599,107 @@
                     `;
                     
                     cell.appendChild(starContainer);
-                    clicks++;
-                    
-                    if (clicks === requiredClicks) {
-                        setTimeout(() => {
-                            playWinSound();
-                            winModal.classList.add('active');
-                        }, 650);
-                    }
+                    updateStats();
                 });
                 
                 board.appendChild(cell);
             }
         }
 
-        function closeModal() {
-            winModal.classList.remove('active');
-            clicks = 0;
-            createBoard();
+        function updateStats() {
+            const potentialWin = betAmount * currentMultiplier;
+            maxWinText.innerText = `${potentialWin.toFixed(2)} P`;
+            
+            // Кнопка забрать
+            const collectBtn = multiplierPanel.querySelector('.collect-btn');
+            collectBtn.innerHTML = `ЗАБРАТЬ х${currentMultiplier} (${potentialWin.toFixed(2)} P)`;
         }
 
+        function startGame() {
+            let inputBet = parseFloat(betAmountInput.value);
+            if (isNaN(inputBet) || inputBet < 10) {
+                alert("Минимальная ставка 10 P");
+                return;
+            }
+            if (inputBet > balance) {
+                alert("Недостаточно средств на балансе");
+                return;
+            }
+
+            // Списание ставки
+            balance -= inputBet;
+            betAmount = inputBet;
+            updateWallet();
+
+            gameActive = true;
+            openedStars = 0;
+            currentMultiplier = 1.0;
+            updateStats();
+
+            // Очистка и создание доски, активация панелей
+            createBoard();
+            multiplierPanel.style.display = 'flex';
+
+            // Инициализация звука
+            initAudio();
+        }
+
+        function collectWin() {
+            if (!gameActive) return;
+            
+            const totalWon = betAmount * currentMultiplier;
+            balance += totalWon;
+            updateWallet();
+
+            document.getElementById('winAmountText').innerText = `${totalWon.toFixed(2)} P`;
+            winModal.classList.add('active');
+            playWinSound();
+            createConfetti();
+
+            gameActive = false;
+            multiplierPanel.style.display = 'none';
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 40; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = `${Math.random() * 10 + 6}px`;
+                confetti.style.height = `${Math.random() * 8 + 4}px`;
+                confetti.style.backgroundColor = ['#60a5fa', '#22c55e', '#facc15', '#f87171'][Math.floor(Math.random() * 4)];
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `-10px`;
+                confetti.style.borderRadius = `${Math.random() * 5}px`;
+                
+                container.appendChild(confetti);
+
+                let posX = Math.random() * 200 - 100;
+                let animationDuration = Math.random() * 2 + 1.5;
+
+                confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 50}px) translateX(${posX}px) rotate(720deg)`, opacity: 0 }
+                ], {
+                    duration: animationDuration * 1000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                });
+            }
+        }
+
+        function closeModal() {
+            winModal.classList.remove('active');
+            // Очищаем доску, чтобы подготовиться к новой игре
+            createBoard();
+            maxWinText.innerText = `0.00 P`;
+        }
+
+        // Инициализация при загрузке
         generateBackgroundCrosses();
         createBoard();
+        updateWallet();
     </script>
 </body>
 </html>
