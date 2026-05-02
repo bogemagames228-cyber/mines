@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines 1WIN Сигналы</title>
+    <title>Mines 1 Win - Испытай удачу</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,338 +12,246 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #0f2b60, #141e30);
-            color: #ffffff;
+            background-color: #2e3d52;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .main-wrapper {
+        .container {
+            max-width: 500px;
             width: 100%;
-            max-width: 900px;
-            padding: 25px;
             text-align: center;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         header h1 {
-            font-size: 24px;
-            color: #60a5fa;
-            margin-bottom: 30px;
+            font-size: 28px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: 0 0 12px #67e8f9;
         }
 
-        .game-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            justify-content: center;
+        .subtitle {
+            font-size: 15px;
+            color: #94a3b8;
             margin-bottom: 30px;
         }
 
-        .field-block {
-            flex: 1;
-            min-width: 280px;
-            max-width: 360px;
-            background: rgba(30, 41, 59, 0.7);
-            border-radius: 14px;
-            padding: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .field-block h2 {
-            font-size: 15px;
-            color: #94a3b8;
-            margin-bottom: 18px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .grid-field {
+        .game-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
+            gap: 12px;
+            margin: 0 auto 30px;
+            max-width: 400px;
             width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
         }
 
         .cell {
             aspect-ratio: 1;
-            background: #1e3a8a;
-            border-radius: 8px;
+            background-color: #047cd7;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(96, 165, 250, 0.2);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .cell:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
+            transform: scale(1.04);
+            background-color: #0588e8;
         }
 
-        /* Игровое поле: состояния */
-        .grid-field:not(.signal-only) .cell.safe {
-            background: #059669;
-            box-shadow: 0 0 12px #059669;
-        }
-
-        .grid-field:not(.signal-only) .cell.mine {
-            background: #dc2626;
-            box-shadow: 0 0 12px #dc2626;
-        }
-
-        /* Поле "Сигнал" */
-        .grid-field.signal-only .cell {
+        .cell.revealed {
+            background-color: #1a2536; /* темнее фон */
             cursor: default;
+            transform: none;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
-        .grid-field.signal-only .cell.signal-safe {
-            background: #059669;
-            box-shadow: 0 0 15px #059669;
-            position: relative;
+        .cell .star {
+            font-size: 32px;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
         }
 
-        .grid-field.signal-only .cell.signal-safe::after {
-            content: '⭐';
-            position: absolute;
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .controls-wrapper {
+        /* Win Modal / Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.85);
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 15px;
-            margin-top: 25px;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(15, 23, 42, 0.8);
-            padding: 10px 18px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .input-group label {
-            font-size: 14px;
-            color: #94a3b8;
-        }
-
-        .input-group input {
-            width: 60px;
-            padding: 6px;
-            background: #090d16;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            color: #fff;
+        .modal {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 40px 30px;
+            border-radius: 20px;
             text-align: center;
-            font-size: 15px;
-            outline: none;
+            max-width: 380px;
+            width: 90%;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
         }
 
-        .action-btn {
-            padding: 12px 32px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        .overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            color: #60a5fa;
+            font-size: 36px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(96, 165, 250, 0.4);
+        }
+
+        .modal-subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        .amount-box {
+            background-color: rgba(4, 124, 215, 0.15);
+            border: 1px solid rgba(4, 124, 215, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 32px;
+        }
+
+        .amount-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .collect-btn {
+            background: linear-gradient(135deg, #047cd7, #02599e);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
+            padding: 16px 32px;
+            font-size: 16px;
             font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(4, 124, 215, 0.4);
+            transition: filter 0.2s, transform 0.1s;
+            width: 100%;
         }
 
-        .action-btn:hover {
+        .collect-btn:hover {
             filter: brightness(1.1);
         }
 
-        .action-btn:active {
-            transform: translateY(2px);
-        }
-
-        .play-money-btn {
-            background: linear-gradient(135deg, #10b981, #047857);
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+        .collect-btn:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
 <body>
-    <div class="main-wrapper">
+    <div class="container">
         <header>
-            <h1>ПОПРОБУЙТЕ НОВЫЕ СИГНАЛЫ MINES 1WIN</h1>
+            <h1>ИСПЫТАЙ СВОЮ УДАЧУ В MINES 1 WIN</h1>
         </header>
+        <div class="subtitle">Нажми любую клетку, чтобы испытать удачу.</div>
 
-        <div class="game-container">
-            <div class="field-block">
-                <h2>ВАШЕ ПОЛЕ</h2>
-                <div id="game-board" class="grid-field"></div>
-                <div style="margin-top: 20px;">
-                    <button class="action-btn play-money-btn" onclick="startGame()">СЫГРАТЬ</button>
-                </div>
-            </div>
+        <div class="game-board" id="board"></div>
+    </div>
 
-            <div class="field-block">
-                <h2>СИГНАЛ</h2>
-                <div id="signal-board" class="grid-field signal-only"></div>
-                <div style="margin-top: 20px;">
-                    <button class="action-btn" onclick="generateSignal()">Получить сигнал</button>
-                </div>
+    <div class="overlay" id="winModal">
+        <div class="modal">
+            <div class="modal-title">YOU'VE WON!</div>
+            <div class="modal-subtitle">Ваш выигрыш</div>
+            <div class="amount-box">
+                <div class="amount-text">500 000 P</div>
             </div>
-        </div>
-
-        <div class="controls-wrapper">
-            <div class="input-group">
-                <label>Количество мин:</label>
-                <input type="number" id="mines-count" value="3" min="1" max="24">
-            </div>
+            <button class="collect-btn" onclick="closeModal()">Забрать выигрыш</button>
         </div>
     </div>
 
     <script>
-        const GRID_SIZE = 5;
-        const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
-        let gameActive = false;
-        let currentMinesLayout = new Array(TOTAL_CELLS).fill(0);
+        const board = document.getElementById('board');
+        const winModal = document.getElementById('winModal');
+        const totalCells = 25;
+        let clicks = 0;
+        const requiredClicks = 6; // Количество нажатий, чтобы выиграть
 
-        // При первой загрузке заполняем сетку пустыми ячейками
-        window.onload = function() {
-            createEmptyBoards();
-        };
-
-        function createEmptyBoards() {
-            const gameBoard = document.getElementById('game-board');
-            const signalBoard = document.getElementById('signal-board');
-            
-            gameBoard.innerHTML = '';
-            signalBoard.innerHTML = '';
-
-            for (let i = 0; i < TOTAL_CELLS; i++) {
-                const gameCell = document.createElement('div');
-                gameCell.classList.add('cell');
-                gameBoard.appendChild(gameCell);
-
-                const signalCell = document.createElement('div');
-                signalCell.classList.add('cell');
-                signalBoard.appendChild(signalCell);
+        function createBoard() {
+            board.innerHTML = '';
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                
+                cell.addEventListener('click', function() {
+                    if (cell.classList.contains('revealed')) return;
+                    
+                    cell.classList.add('revealed');
+                    
+                    // Добавляем 3Д звездочку
+                    const starSpan = document.createElement('span');
+                    starSpan.classList.add('star');
+                    starSpan.innerHTML = '⭐';
+                    cell.appendChild(starSpan);
+                    
+                    clicks++;
+                    
+                    if (clicks === requiredClicks) {
+                        setTimeout(() => {
+                            winModal.classList.add('active');
+                        }, 500);
+                    }
+                });
+                
+                board.appendChild(cell);
             }
         }
 
-        function generateSignal() {
-            const minesCountInput = document.getElementById('mines-count');
-            let minesCount = parseInt(minesCountInput.value);
-
-            if (isNaN(minesCount) || minesCount < 1 || minesCount > 24) {
-                alert("Количество мин должно быть от 1 до 24.");
-                return;
-            }
-
-            const signalBoard = document.getElementById('signal-board');
-            signalBoard.innerHTML = '';
-
-            // Генерируем массив мин
-            currentMinesLayout.fill(0);
-            let placedMines = 0;
-            while (placedMines < minesCount) {
-                let randomIndex = Math.floor(Math.random() * TOTAL_CELLS);
-                if (currentMinesLayout[randomIndex] === 0) {
-                    currentMinesLayout[randomIndex] = 1;
-                    placedMines++;
-                }
-            }
-
-            // Отрисовываем сигнал
-            for (let i = 0; i < TOTAL_CELLS; i++) {
-                const signalCell = document.createElement('div');
-                signalCell.classList.add('cell');
-
-                if (currentMinesLayout[i] === 0) {
-                    signalCell.classList.add('signal-safe');
-                }
-                signalBoard.appendChild(signalCell);
-            }
-
-            // Подготавливаем игровое поле (очищаем и ставим клетки)
-            const gameBoard = document.getElementById('game-board');
-            gameBoard.innerHTML = '';
-            for (let i = 0; i < TOTAL_CELLS; i++) {
-                const gameCell = document.createElement('div');
-                gameCell.classList.add('cell');
-                gameBoard.appendChild(gameCell);
-            }
-
-            gameActive = true;
+        function closeModal() {
+            winModal.classList.remove('active');
+            clicks = 0;
+            createBoard();
         }
 
-        function startGame() {
-            if (!gameActive) {
-                alert("Сначала нажмите \"Получить сигнал\"!");
-                return;
-            }
-
-            const gameBoard = document.getElementById('game-board');
-            gameBoard.innerHTML = '';
-
-            for (let i = 0; i < TOTAL_CELLS; i++) {
-                const gameCell = document.createElement('div');
-                gameCell.classList.add('cell');
-                gameCell.dataset.index = i;
-                gameCell.dataset.mine = currentMinesLayout[i] === 1 ? 'true' : 'false';
-
-                gameCell.addEventListener('click', onCellClick);
-                gameBoard.appendChild(gameCell);
-            }
-        }
-
-        function onCellClick() {
-            if (!gameActive) return;
-            if (this.classList.contains('revealed')) return;
-
-            this.classList.add('revealed');
-
-            if (this.dataset.mine === 'true') {
-                this.classList.add('mine');
-                this.innerHTML = '💣';
-                gameActive = false;
-                setTimeout(() => {
-                    alert('Вы проиграли!');
-                }, 150);
-                revealAllMines();
-            } else {
-                this.classList.add('safe');
-                this.innerHTML = '⭐';
-            }
-        }
-
-        function revealAllMines() {
-            const cells = document.querySelectorAll('#game-board .cell');
-            cells.forEach(cell => {
-                if (cell.dataset.mine === 'true') {
-                    cell.classList.add('revealed', 'mine');
-                    cell.innerHTML = '💣';
-                }
-            });
-        }
+        // Initialize board
+        createBoard();
     </script>
 </body>
 </html>
-
