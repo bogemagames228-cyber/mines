@@ -4,24 +4,211 @@ HTML
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mines Signals Simulation</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Mines 1WIN Сигналы</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2b60, #141e30);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 900px;
+            padding: 25px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        header h1 {
+            font-size: 24px;
+            color: #60a5fa;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .field-block {
+            flex: 1;
+            min-width: 280px;
+            max-width: 360px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .field-block h2 {
+            font-size: 15px;
+            color: #94a3b8;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .grid-field {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: #1e3a8a;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .cell:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        /* Игровое поле: состояния */
+        .grid-field:not(.signal-only) .cell.safe {
+            background: #059669;
+            box-shadow: 0 0 12px #059669;
+        }
+
+        .grid-field:not(.signal-only) .cell.mine {
+            background: #dc2626;
+            box-shadow: 0 0 12px #dc2626;
+        }
+
+        /* Поле "Сигнал" */
+        .grid-field.signal-only .cell {
+            cursor: default;
+        }
+
+        .grid-field.signal-only .cell.signal-safe {
+            background: #059669;
+            box-shadow: 0 0 15px #059669;
+            position: relative;
+        }
+
+        .grid-field.signal-only .cell.signal-safe::after {
+            content: '⭐';
+            position: absolute;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .input-group input {
+            width: 60px;
+            padding: 6px;
+            background: #090d16;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #fff;
+            text-align: center;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .action-btn {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
+        }
+
+        .play-money-btn {
+            background: linear-gradient(135deg, #10b981, #047857);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+        }
+    </style>
 </head>
 <body>
     <div class="main-wrapper">
         <header>
-            <h1>СИМУЛЯТОР СИГНАЛОВ MINES</h1>
+            <h1>ПОПРОБУЙТЕ НОВЫЕ СИГНАЛЫ MINES 1WIN</h1>
         </header>
-        
+
         <div class="game-container">
             <div class="field-block">
-                <h2>ТВОЕ ПОЛЕ (ИГРА)</h2>
+                <h2>ВАШЕ ПОЛЕ</h2>
                 <div id="game-board" class="grid-field"></div>
+                <div style="margin-top: 20px;">
+                    <button class="action-btn play-money-btn" onclick="startGame()">СЫГРАТЬ</button>
+                </div>
             </div>
 
             <div class="field-block">
-                <h2>СИГНАЛ (СХЕМА)</h2>
+                <h2>СИГНАЛ</h2>
                 <div id="signal-board" class="grid-field signal-only"></div>
+                <div style="margin-top: 20px;">
+                    <button class="action-btn" onclick="generateSignal()">Получить сигнал</button>
+                </div>
             </div>
         </div>
 
@@ -30,10 +217,134 @@ HTML
                 <label>Количество мин:</label>
                 <input type="number" id="mines-count" value="3" min="1" max="24">
             </div>
-            <button id="get-signal-btn" class="action-btn" onclick="generateRound()">ПОЛУЧИТЬ СИГНАЛ</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const GRID_SIZE = 5;
+        const TOTAL_CELLS = GRID_SIZE * GRID_SIZE;
+        let gameActive = false;
+        let currentMinesLayout = new Array(TOTAL_CELLS).fill(0);
+
+        // При первой загрузке заполняем сетку пустыми ячейками
+        window.onload = function() {
+            createEmptyBoards();
+        };
+
+        function createEmptyBoards() {
+            const gameBoard = document.getElementById('game-board');
+            const signalBoard = document.getElementById('signal-board');
+            
+            gameBoard.innerHTML = '';
+            signalBoard.innerHTML = '';
+
+            for (let i = 0; i < TOTAL_CELLS; i++) {
+                const gameCell = document.createElement('div');
+                gameCell.classList.add('cell');
+                gameBoard.appendChild(gameCell);
+
+                const signalCell = document.createElement('div');
+                signalCell.classList.add('cell');
+                signalBoard.appendChild(signalCell);
+            }
+        }
+
+        function generateSignal() {
+            const minesCountInput = document.getElementById('mines-count');
+            let minesCount = parseInt(minesCountInput.value);
+
+            if (isNaN(minesCount) || minesCount < 1 || minesCount > 24) {
+                alert("Количество мин должно быть от 1 до 24.");
+                return;
+            }
+
+            const signalBoard = document.getElementById('signal-board');
+            signalBoard.innerHTML = '';
+
+            // Генерируем массив мин
+            currentMinesLayout.fill(0);
+            let placedMines = 0;
+            while (placedMines < minesCount) {
+                let randomIndex = Math.floor(Math.random() * TOTAL_CELLS);
+                if (currentMinesLayout[randomIndex] === 0) {
+                    currentMinesLayout[randomIndex] = 1;
+                    placedMines++;
+                }
+            }
+
+            // Отрисовываем сигнал
+            for (let i = 0; i < TOTAL_CELLS; i++) {
+                const signalCell = document.createElement('div');
+                signalCell.classList.add('cell');
+
+                if (currentMinesLayout[i] === 0) {
+                    signalCell.classList.add('signal-safe');
+                }
+                signalBoard.appendChild(signalCell);
+            }
+
+            // Подготавливаем игровое поле (очищаем и ставим клетки)
+            const gameBoard = document.getElementById('game-board');
+            gameBoard.innerHTML = '';
+            for (let i = 0; i < TOTAL_CELLS; i++) {
+                const gameCell = document.createElement('div');
+                gameCell.classList.add('cell');
+                gameBoard.appendChild(gameCell);
+            }
+
+            gameActive = true;
+        }
+
+        function startGame() {
+            if (!gameActive) {
+                alert("Сначала нажмите \"Получить сигнал\"!");
+                return;
+            }
+
+            const gameBoard = document.getElementById('game-board');
+            gameBoard.innerHTML = '';
+
+            for (let i = 0; i < TOTAL_CELLS; i++) {
+                const gameCell = document.createElement('div');
+                gameCell.classList.add('cell');
+                gameCell.dataset.index = i;
+                gameCell.dataset.mine = currentMinesLayout[i] === 1 ? 'true' : 'false';
+
+                gameCell.addEventListener('click', onCellClick);
+                gameBoard.appendChild(gameCell);
+            }
+        }
+
+        function onCellClick() {
+            if (!gameActive) return;
+            if (this.classList.contains('revealed')) return;
+
+            this.classList.add('revealed');
+
+            if (this.dataset.mine === 'true') {
+                this.classList.add('mine');
+                this.innerHTML = '💣';
+                gameActive = false;
+                setTimeout(() => {
+                    alert('Вы проиграли!');
+                }, 150);
+                revealAllMines();
+            } else {
+                this.classList.add('safe');
+                this.innerHTML = '⭐';
+            }
+        }
+
+        function revealAllMines() {
+            const cells = document.querySelectorAll('#game-board .cell');
+            cells.forEach(cell => {
+                if (cell.dataset.mine === 'true') {
+                    cell.classList.add('revealed', 'mine');
+                    cell.innerHTML = '💣';
+                }
+            });
+        }
+    </script>
 </body>
 </html>
+
